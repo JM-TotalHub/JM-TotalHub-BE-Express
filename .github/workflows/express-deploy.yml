@@ -1,0 +1,86 @@
+name: Build and Push Docker Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: 코드 체크아웃
+        uses: actions/checkout@v3
+
+      - name: 환경 변수 로드
+        id: load-env
+        run: |
+          echo "${{ secrets.EXPRESS_SERVER01_ENV }}" | while IFS= read -r line; do
+            # 주석과 빈 줄 무시
+            if [[ -n "$line" && "$line" != \#* ]]; then
+              echo "$line" >> $GITHUB_ENV
+            fi
+          done
+
+      - name: Node 설치
+        uses: actions/setup-node@v2
+        with:
+          node-version: "20.14.0"
+
+      - name: 의존성 설치
+        run: npm install
+
+      # - name: 테스트 실행
+      #   env:
+      #     # 데이터베이스 환경변수
+      #     EXPRESS_SERVER01_DATABASE_URL: ${{ env.EXPRESS_SERVER01_DATABASE_URL }}
+      #     EXPRESS_SERVER01_REDIS_URL: ${{ env.EXPRESS_SERVER01_REDIS_URL }}
+      #     EXPRESS_SERVER01_REDIS_PORT: ${{ env.EXPRESS_SERVER01_REDIS_PORT }}
+      #     EXPRESS_SERVER01_REDIS_PASSWORD: ${{ env.EXPRESS_SERVER01_REDIS_PASSWORD }}
+      #     # JWT 환경변수
+      #     JWT_SECRET_KEY: ${{ env.JWT_SECRET_KEY01 }}
+      #     JWT_ACCESS_TOKEN_EXPIRATION: ${{ env.JWT_ACCESS_TOKEN_EXPIRATION }}
+      #     JWT_REFRESH_TOKEN_EXPIRATION: ${{ env.JWT_REFRESH_TOKEN_EXPIRATION }}
+      #   run: npm test
+
+      - name: Docker Buildx 설정
+        uses: docker/setup-buildx-action@v1
+
+      - name: Docker Hub 로그인
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Docker image 빌드 & 푸쉬
+        uses: docker/build-push-action@v2
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/jm-total-hub:express-latest
+
+      - name: EC2 배포
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ env.EXPRESS_SERVER01_EC2_HOST }}
+          username: ${{ env.EXPRESS_SERVER01_EC2_USERNAME }}
+          key: ${{ secrets.EXPRESS_SERVER01_EC2_PRIVATE_KEY }}
+          script: |
+            docker image prune -a -f --filter "until=12h"
+            docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+            # 데이터베이스 환경변수
+            export EXPRESS_SERVER01_DATABASE_URL=${{ env.EXPRESS_SERVER01_DATABASE_URL }}
+            export EXPRESS_SERVER01_REDIS_URL=${{ env.EXPRESS_SERVER01_REDIS_URL }}
+            export EXPRESS_SERVER01_REDIS_PORT=${{ env.EXPRESS_SERVER01_REDIS_PORT }}
+            export EXPRESS_SERVER01_REDIS_PASSWORD=${{ env.EXPRESS_SERVER01_REDIS_PASSWORD }}
+            # JWT 환경변수
+            export JWT_SECRET_KEY01=${{ env.JWT_SECRET_KEY01 }}
+            export JWT_ACCESS_TOKEN_EXPIRATION=${{ env.JWT_ACCESS_TOKEN_EXPIRATION }}
+            export JWT_REFRESH_TOKEN_EXPIRATION=${{ env.JWT_REFRESH_TOKEN_EXPIRATION }}
+            cd express
+            sudo -E docker-compose pull express 
+            sudo -E docker-compose up -d express  
+            sudo -E docker-compose logs express
+

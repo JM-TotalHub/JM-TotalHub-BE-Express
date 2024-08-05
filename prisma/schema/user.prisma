@@ -1,0 +1,32 @@
+model user {
+  id         Int       @id @default(autoincrement())
+  email      String    @unique
+  password   String
+  nickname   String    @default("default-nickname")
+  loginType  LoginType
+  providerId String?
+  roleType   RoleType     
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  boards     board[]
+  posts      post[]
+  comments   comment[]
+  chat_rooms chat_room[] 
+  chat_room_members chat_room_member[]
+  chat_messages chat_message[]
+
+  @@unique([email, loginType])
+}
+
+enum LoginType {
+  normal
+  google
+  naver
+}
+
+enum RoleType {
+  admin
+  normal
+}
+
