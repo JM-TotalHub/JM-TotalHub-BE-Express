@@ -41,6 +41,13 @@ class ChatController {
     );
     res.status(201).json(createdChatRoom);
   }
+
+  async chatRoomJoin(req, res) {
+    const { id, email, nickname, loginType, roleType } = req.user;
+    const userData = { id, email, nickname, loginType, roleType };
+    const { chatRoomId } = req.params;
+    const chatRoom = await chatService.joinChatRoom(userData, chatRoomId);
+  }
 }
 
 export default ChatController;

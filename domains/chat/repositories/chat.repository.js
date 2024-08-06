@@ -15,12 +15,40 @@ import prisma from '../../../prisma';
 class ChatRepository {
   constructor() {}
 
-  async findChatRoomById(userId, chatRoomId) {
+  async findChatRoomById(chatRoomId) {
     return await prisma.chat_room.findUniqueOrThrow({
       where: {
         id: Number(chatRoomId),
       },
     });
+  }
+
+  async findChatRoomWhitMembersById(chatRoomId) {
+    return await prisma.chat_room.findUniqueOrThrow({
+      where: {
+        id: Number(chatRoomId),
+      },
+      include: {
+        chat_room_members: true,
+      },
+    });
+  }
+
+  // 나중에 채팅방 리스트 필터링에 적용
+  async findChatRoomsWithFilters(userId) {
+    const memberRooms = await prisma.chat_room_member.findMany({
+      where: {
+        user_id: userId,
+      },
+      select: {
+        chat_room_id: true,
+      },
+    });
+
+    // 채팅방 ID 목록 배열
+    const chatRoomIds = memberRooms.map((member) => member.chat_room_id);
+
+    return chatRoomIds;
   }
 
   async findChatRoomList(userId, queryData) {
@@ -33,18 +61,8 @@ class ChatRepository {
       sortOrder,
     } = queryData;
 
-    // 사용자가 참여 중인 채팅방 ID 목록 json 형태
-    const memberRooms = await prisma.chat_room_member.findMany({
-      where: {
-        user_id: userId,
-      },
-      select: {
-        chat_room_id: true,
-      },
-    });
-
-    // 채팅방 ID 목록 배열
-    const chatRoomIds = memberRooms.map((member) => member.chat_room_id);
+    // 유저 참가 채팅방 id 리스트 배열
+    const chatRoomIds = await this.findChatRoomsWithFilters(userId);
 
     let where = {
       id: {

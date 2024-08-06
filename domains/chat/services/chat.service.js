@@ -10,15 +10,17 @@
  * ======================================================================
  */
 
+import Api from '../../../common/utils/connection/api';
 import ChatRepository from '../repositories/chat.repository';
 
 const chatRepository = new ChatRepository();
+const api = new Api();
 
 class ChatService {
   constructor() {}
 
   async findChatRoom(userId, chatRoomId) {
-    return await chatRepository.findChatRoomById(userId, chatRoomId);
+    return await chatRepository.findChatRoomById(chatRoomId);
   }
 
   async findChatRoomList(userId, queryData) {
@@ -37,6 +39,25 @@ class ChatService {
     );
 
     return createdChatRoom;
+  }
+
+  async joinChatRoom(userData, chatRoomId) {
+    const chatRoomData =
+      await chatRepository.findChatRoomWhitMembersById(chatRoomId);
+
+    const isMember = chatRoomData.chat_room_members.some(
+      (member) => member.user_id === userData.id
+    );
+
+    // 채팅방 첫 참가인 경우 참가인원으로 추가
+    if (!isMember) {
+      await chatRepository.insertChatRoomMember(userData, chatRoomData);
+    }
+
+    api.signalApi.post(`/chats/chat-rooms/${chatRoomId}`, {
+      userData,
+      chatRoomData,
+    });
   }
 }
 
