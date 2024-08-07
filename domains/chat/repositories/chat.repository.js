@@ -69,7 +69,7 @@ class ChatRepository {
         in: chatRoomIds, // 사용자가 참여 중인 방 필터링
       },
       chat_type: {
-        in: ['one_on_one', 'private', 'public'], // 원하는 방 타입 필터링
+        in: ['one_to_one', 'private', 'public'], // 원하는 방 타입 필터링
       },
     };
 

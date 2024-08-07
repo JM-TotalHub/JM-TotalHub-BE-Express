@@ -46,7 +46,8 @@ class ChatController {
     const { id, email, nickname, loginType, roleType } = req.user;
     const userData = { id, email, nickname, loginType, roleType };
     const { chatRoomId } = req.params;
-    const chatRoom = await chatService.joinChatRoom(userData, chatRoomId);
+    await chatService.joinChatRoom(userData, chatRoomId);
+    res.status(201).json();
   }
 }
 

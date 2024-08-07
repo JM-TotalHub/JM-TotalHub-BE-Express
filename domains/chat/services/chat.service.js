@@ -10,7 +10,7 @@
  * ======================================================================
  */
 
-import Api from '../../../common/utils/connection/api';
+import Api from '../../../common/connection/api';
 import ChatRepository from '../repositories/chat.repository';
 
 const chatRepository = new ChatRepository();
@@ -49,15 +49,18 @@ class ChatService {
       (member) => member.user_id === userData.id
     );
 
-    // 채팅방 첫 참가인 경우 참가인원으로 추가
+    // 채팅방 첫 참가인 경우 참가인원으로 추가 (나중에 여기서 public / private 나뉠 듯 - 현재는 public만 고려)
     if (!isMember) {
       await chatRepository.insertChatRoomMember(userData, chatRoomData);
     }
 
+    // 시그널 서버에 참가 정보 전달
     api.signalApi.post(`/chats/chat-rooms/${chatRoomId}`, {
       userData,
       chatRoomData,
     });
+
+    return null;
   }
 }
 

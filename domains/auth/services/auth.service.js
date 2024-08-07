@@ -1,10 +1,11 @@
-import * as AuthRepository from '../repositories/auth.repository';
-
-import redisClient from '../../../common/utils/redisClient';
-import getExpirationInSeconds from '../../../common/utils/expireTime';
-
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import * as AuthRepository from '../repositories/auth.repository';
+import getExpirationInSeconds from '../../../common/utils/expireTime';
+
+import redisManager from '../../../common/connection/redisManager';
+
+const redisClient = redisManager.getClient('serverClient');
 
 export async function signUpUser(bodyData) {
   const { password } = bodyData;

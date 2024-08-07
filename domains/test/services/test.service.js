@@ -1,5 +1,8 @@
 import { PrismaClient } from '@prisma/client';
-import redisClient from '../../../common/utils/redisClient';
+
+import redisManager from '../../../common/connection/redisManager';
+
+const redisClient = redisManager.getClient('serverClient');
 
 const prisma = new PrismaClient();
 
@@ -38,7 +41,6 @@ async function deleteTest(testId) {
   });
 }
 
-// Redis�� ����ϴ� �Լ�
 async function getFromCache(key) {
   try {
     const data = await redisClient.get(key);
