@@ -1,8 +1,8 @@
 import { PrismaClient } from '@prisma/client';
 
-import redisManager from '../../../common/connection/redisManager';
+import RedisManager from '../../../common/connection/redisManager';
 
-const redisClient = redisManager.getClient('serverClient');
+const redisClient = RedisManager.getClient();
 
 const prisma = new PrismaClient();
 

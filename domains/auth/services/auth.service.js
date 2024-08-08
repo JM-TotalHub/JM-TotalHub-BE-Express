@@ -3,9 +3,9 @@ import bcrypt from 'bcryptjs';
 import * as AuthRepository from '../repositories/auth.repository';
 import getExpirationInSeconds from '../../../common/utils/expireTime';
 
-import redisManager from '../../../common/connection/redisManager';
+import RedisManager from '../../../common/connection/redisManager';
 
-const redisClient = redisManager.getClient('serverClient');
+const redisClient = RedisManager.getClient();
 
 export async function signUpUser(bodyData) {
   const { password } = bodyData;

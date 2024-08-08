@@ -12,43 +12,43 @@
 
 import ChatService from '../services/chat.service';
 
-const chatService = new ChatService();
+const chatRoomDetails = async (req, res) => {
+  const { chatRoomId } = req.params;
+  const userId = req.user.id;
+  const chatRoom = await ChatService.findChatRoom(userId, chatRoomId);
+  res.status(200).json(chatRoom);
+};
 
-class ChatController {
-  constructor() {}
+const chatRoomList = async (req, res) => {
+  const queryData = req.query;
+  const userId = req.user.id;
+  const chatRoomList = await ChatService.findChatRoomList(userId, queryData);
+  res.status(200).json(chatRoomList);
+};
 
-  async chatRoomDetails(req, res) {
-    const { chatRoomId } = req.params;
-    const userId = req.user.id;
-    const chatRoom = await chatService.findChatRoom(userId, chatRoomId);
-    res.status(200).json(chatRoom);
-  }
+const chatRoomAdd = async (req, res) => {
+  const bodyData = req.body;
+  const { id, email, nickname, loginType, roleType } = req.user;
+  const userData = { id, email, nickname, loginType, roleType };
+  const createdChatRoom = await ChatService.createChatRoom(userData, bodyData);
+  res.status(201).json(createdChatRoom);
+};
 
-  async chatRoomList(req, res) {
-    const queryData = req.query;
-    const userId = req.user.id;
-    const chatRoomList = await chatService.findChatRoomList(userId, queryData);
-    res.status(200).json(chatRoomList);
-  }
+const chatRoomJoin = async (req, res) => {
+  const { id, email, nickname, loginType, roleType } = req.user;
+  const userData = { id, email, nickname, loginType, roleType };
 
-  async chatRoomAdd(req, res) {
-    const bodyData = req.body;
-    const { id, email, nickname, loginType, roleType } = req.user;
-    const userData = { id, email, nickname, loginType, roleType };
-    const createdChatRoom = await chatService.createChatRoom(
-      userData,
-      bodyData
-    );
-    res.status(201).json(createdChatRoom);
-  }
+  const { chatRoomId } = req.params;
 
-  async chatRoomJoin(req, res) {
-    const { id, email, nickname, loginType, roleType } = req.user;
-    const userData = { id, email, nickname, loginType, roleType };
-    const { chatRoomId } = req.params;
-    await chatService.joinChatRoom(userData, chatRoomId);
-    res.status(201).json();
-  }
-}
+  await ChatService.joinChatRoom(userData, chatRoomId);
+  res.status(201).json();
+};
+
+const ChatController = {
+  chatRoomDetails,
+  chatRoomList,
+  chatRoomAdd,
+  chatRoomJoin,
+};
 
 export default ChatController;

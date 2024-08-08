@@ -14,7 +14,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(
   cors({
-    origin: `${process.env.REACT_LOCAL_HOST}:${process.env.REACT_LOCAL_PORT}`, // 클라이언트 도메인
+    origin: `http://${process.env.REACT_LOCAL_HOST}:${process.env.REACT_LOCAL_PORT}`, // 클라이언트 도메인
     credentials: true, // 쿠키를 포함한 요청 허용
   })
 );

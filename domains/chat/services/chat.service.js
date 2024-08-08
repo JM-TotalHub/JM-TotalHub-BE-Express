@@ -10,58 +10,55 @@
  * ======================================================================
  */
 
-import Api from '../../../common/connection/api';
+import api from '../../../common/connection/api';
 import ChatRepository from '../repositories/chat.repository';
 
-const chatRepository = new ChatRepository();
-const api = new Api();
+const findChatRoom = async (userId, chatRoomId) => {
+  return await ChatRepository.findChatRoomById(chatRoomId);
+};
 
-class ChatService {
-  constructor() {}
+const findChatRoomList = async (userId, queryData) => {
+  return await ChatRepository.findChatRoomList(userId, queryData);
+};
 
-  async findChatRoom(userId, chatRoomId) {
-    return await chatRepository.findChatRoomById(chatRoomId);
+const createChatRoom = async (userData, bodyData) => {
+  const createdChatRoom = await ChatRepository.insertChatRoom(
+    userData,
+    bodyData
+  );
+
+  await ChatRepository.insertChatRoomMember(userData, createdChatRoom);
+
+  return createdChatRoom;
+};
+
+const joinChatRoom = async (userData, chatRoomId) => {
+  const chatRoomData =
+    await ChatRepository.findChatRoomWithMembersById(chatRoomId);
+
+  const isMember = chatRoomData.chat_room_members.some(
+    (member) => member.user_id === userData.id
+  );
+
+  // 채팅방 첫 참가인 경우 참가인원으로 추가 (나중에 여기서 public / private 나뉠 듯 - 현재는 public만 고려)
+  if (!isMember) {
+    await ChatRepository.insertChatRoomMember(userData, chatRoomData);
   }
 
-  async findChatRoomList(userId, queryData) {
-    return await chatRepository.findChatRoomList(userId, queryData);
-  }
+  // 시그널 서버에 참가 정보 전달
+  api.post(`/chats/chat-rooms/${chatRoomId}`, {
+    userData,
+    chatRoomData,
+  });
 
-  async createChatRoom(userData, bodyData) {
-    const createdChatRoom = await chatRepository.insertChatRoom(
-      userData,
-      bodyData
-    );
+  return null;
+};
 
-    const createChatRoomMember = await chatRepository.insertChatRoomMember(
-      userData,
-      createdChatRoom
-    );
-
-    return createdChatRoom;
-  }
-
-  async joinChatRoom(userData, chatRoomId) {
-    const chatRoomData =
-      await chatRepository.findChatRoomWhitMembersById(chatRoomId);
-
-    const isMember = chatRoomData.chat_room_members.some(
-      (member) => member.user_id === userData.id
-    );
-
-    // 채팅방 첫 참가인 경우 참가인원으로 추가 (나중에 여기서 public / private 나뉠 듯 - 현재는 public만 고려)
-    if (!isMember) {
-      await chatRepository.insertChatRoomMember(userData, chatRoomData);
-    }
-
-    // 시그널 서버에 참가 정보 전달
-    api.signalApi.post(`/chats/chat-rooms/${chatRoomId}`, {
-      userData,
-      chatRoomData,
-    });
-
-    return null;
-  }
-}
+const ChatService = {
+  findChatRoom,
+  findChatRoomList,
+  createChatRoom,
+  joinChatRoom,
+};
 
 export default ChatService;
