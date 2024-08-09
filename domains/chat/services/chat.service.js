@@ -46,12 +46,12 @@ const joinChatRoom = async (userData, chatRoomId) => {
   }
 
   // 시그널 서버에 참가 정보 전달
-  api.post(`/chats/chat-rooms/${chatRoomId}`, {
+  const response = await api.post(`/chats/chat-rooms/${chatRoomId}`, {
     userData,
     chatRoomData,
   });
 
-  return null;
+  return response.data;
 };
 
 const ChatService = {

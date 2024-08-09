@@ -1,9 +1,10 @@
+import ENV from '../utils/env';
 import { createClient } from 'redis';
 
 const RedisManager = (() => {
   const redisClient = createClient({
-    url: `redis://${process.env.EXPRESS_SERVER01_REDIS_URL}:${process.env.EXPRESS_SERVER01_REDIS_PORT}`,
-    password: process.env.EXPRESS_SERVER01_REDIS_PASSWORD,
+    url: `redis://${ENV.EXPRESS_SERVER01_REDIS_URL}:${ENV.EXPRESS_SERVER01_REDIS_PORT}`,
+    password: ENV.EXPRESS_SERVER01_REDIS_PASSWORD,
   });
 
   const connectClient = async () => {

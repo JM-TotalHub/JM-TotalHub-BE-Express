@@ -1,15 +1,13 @@
+import ENV from '../utils/env';
 import axios from 'axios';
 
 const api = (() => {
-  const ENV = process.env.EXPRESS_SERVER_ENV_STATUS;
+  console.log(ENV.SIGNAL_SERVER_BASE_URL);
 
-  const SIGNAL_SERVER_URL =
-    ENV === 'prod'
-      ? `http://${process.env.NGINX_SERVER_EC2_HOST}/signal`
-      : `http://${process.env.SIGNAL_LOCAL_HOST}:${process.env.SIGNAL_LOCAL_PORT}`;
+  const SIGNAL_SERVER_BASE_URL = ENV.SIGNAL_SERVER_BASE_URL;
 
   const signalApi = axios.create({
-    baseURL: SIGNAL_SERVER_URL,
+    baseURL: SIGNAL_SERVER_BASE_URL,
   });
 
   const setupInterceptors = () => {

@@ -40,8 +40,8 @@ const chatRoomJoin = async (req, res) => {
 
   const { chatRoomId } = req.params;
 
-  await ChatService.joinChatRoom(userData, chatRoomId);
-  res.status(201).json();
+  const chatRoomData = await ChatService.joinChatRoom(userData, chatRoomId);
+  res.status(201).json(chatRoomData);
 };
 
 const ChatController = {
