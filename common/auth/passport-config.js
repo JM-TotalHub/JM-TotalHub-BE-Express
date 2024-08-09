@@ -1,3 +1,4 @@
+import ENV from '../../common/utils/env';
 import passport from 'passport';
 import { Strategy, ExtractJwt } from 'passport-jwt';
 
@@ -14,7 +15,7 @@ const cookieExtractor = (req) => {
 const opts = {
   // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
-  secretOrKey: process.env.JWT_SECRET_KEY01,
+  secretOrKey: ENV.JWT_SECRET_KEY01,
 };
 
 passport.use(

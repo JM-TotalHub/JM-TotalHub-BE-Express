@@ -1,10 +1,7 @@
+import ENV from './common/utils/env';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
-import dotenv from 'dotenv';
 import express from 'express';
-
-// 환경 변수 설정
-dotenv.config();
 
 // app
 const app = express();
@@ -14,13 +11,13 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(
   cors({
-    origin: `${process.env.REACT_URL}:${process.env.REACT_PORT}`, // 클라이언트 도메인
-    credentials: true, // 쿠키를 포함한 요청 허용
+    origin: `http://${ENV.REACT_LOCAL_HOST}:${ENV.REACT_LOCAL_PORT}`,
+    credentials: true,
   })
 );
 app.use(cookieParser());
 
-// JWT 인증 미들웨어(제외할 경로만 써넣기)
+// JWT 인증 미들웨어 - 필요시 적용
 // const excludedPaths = ['/tests'];
 // app.use(jwtAuthMiddleware(excludedPaths));
 
@@ -34,7 +31,6 @@ app.use('/auth', authRouter);
 app.use('/tests', testRouter);
 app.use('/boards', boardRouter);
 app.use('/chats', chatRouter);
-
 app.get('/connect-test', (req, res) => {
   res.send('서버 연결 완료');
 });

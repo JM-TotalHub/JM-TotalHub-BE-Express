@@ -17,9 +17,9 @@ model chat_room {
 }
 
 enum ChatType {
-  one_on_one
-  public
+  one_to_one
   private
+  public
 }
 
 

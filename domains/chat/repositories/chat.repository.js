@@ -12,101 +12,116 @@
 
 import prisma from '../../../prisma';
 
-class ChatRepository {
-  constructor() {}
+const findChatRoomById = async (chatRoomId) => {
+  return await prisma.chat_room.findUniqueOrThrow({
+    where: {
+      id: Number(chatRoomId),
+    },
+  });
+};
 
-  async findChatRoomById(userId, chatRoomId) {
-    return await prisma.chat_room.findUniqueOrThrow({
-      where: {
-        id: Number(chatRoomId),
-      },
-    });
-  }
+const findChatRoomWithMembersById = async (chatRoomId) => {
+  return await prisma.chat_room.findUniqueOrThrow({
+    where: {
+      id: Number(chatRoomId),
+    },
+    include: {
+      chat_room_members: true,
+    },
+  });
+};
 
-  async findChatRoomList(userId, queryData) {
-    const {
-      pageNum,
-      dataPerPage,
-      searchType,
-      searchText,
-      sortField,
-      sortOrder,
-    } = queryData;
+// 나중에 채팅방 리스트 필터링에 적용
+const findChatRoomsWithFilters = async (userId) => {
+  const memberRooms = await prisma.chat_room_member.findMany({
+    where: {
+      user_id: userId,
+    },
+    select: {
+      chat_room_id: true,
+    },
+  });
 
-    // 사용자가 참여 중인 채팅방 ID 목록 json 형태
-    const memberRooms = await prisma.chat_room_member.findMany({
-      where: {
-        user_id: userId,
-      },
-      select: {
-        chat_room_id: true,
-      },
-    });
+  // 채팅방 ID 목록 배열
+  return memberRooms.map((member) => member.chat_room_id);
+};
 
-    // 채팅방 ID 목록 배열
-    const chatRoomIds = memberRooms.map((member) => member.chat_room_id);
+const findChatRoomList = async (userId, queryData) => {
+  const { pageNum, dataPerPage, searchType, searchText, sortField, sortOrder } =
+    queryData;
 
-    let where = {
-      id: {
-        in: chatRoomIds, // 사용자가 참여 중인 방 필터링
-      },
-      chat_type: {
-        in: ['one_on_one', 'private', 'public'], // 원하는 방 타입 필터링
-      },
-    };
+  // 유저 참가 채팅방 id 리스트 배열
+  const chatRoomIds = await findChatRoomsWithFilters(userId);
 
-    if (searchType && searchText) {
-      where[searchType] = {
-        contains: searchText,
-      };
-    }
+  let where = {
+    id: {
+      in: chatRoomIds, // 사용자가 참여 중인 방 필터링
+    },
+    chat_type: {
+      in: ['one_to_one', 'private', 'public'], // 원하는 방 타입 필터링
+    },
+  };
 
-    const chatRoomList = await prisma.chat_room.findMany({
-      skip: (pageNum - 1) * dataPerPage,
-      take: dataPerPage,
-      where,
-      orderBy: {
-        [sortField]: sortOrder,
-      },
-    });
-
-    const totalDataCount = await prisma.chat_room.count({ where });
-    const totalPage = Math.ceil(totalDataCount / dataPerPage);
-
-    return {
-      chatRoomList,
-      totalPage,
-      pageNum,
+  if (searchType && searchText) {
+    where[searchType] = {
+      contains: searchText,
     };
   }
 
-  async insertChatRoom(userData, bodyData) {
-    const { id: user_id } = userData;
-    const { name, description, chat_type } = bodyData;
-    return await prisma.chat_room.create({
-      data: {
-        name,
-        description,
-        chat_type,
-        user_id: Number(user_id),
-      },
-    });
-  }
+  const chatRoomList = await prisma.chat_room.findMany({
+    skip: (pageNum - 1) * dataPerPage,
+    take: dataPerPage,
+    where,
+    orderBy: {
+      [sortField]: sortOrder,
+    },
+  });
 
-  async insertChatRoomMember(userData, chatRoomData) {
-    const { id: user_id, email, nickname, loginType, roleType } = userData;
-    const { id: chat_room_id } = chatRoomData;
-    return await prisma.chat_room_member.create({
-      data: {
-        email,
-        nickname,
-        loginType,
-        roleType,
-        chat_room_id: Number(chat_room_id),
-        user_id: Number(user_id),
-      },
-    });
-  }
-}
+  const totalDataCount = await prisma.chat_room.count({ where });
+  const totalPage = Math.ceil(totalDataCount / dataPerPage);
+
+  return {
+    chatRoomList,
+    totalPage,
+    pageNum,
+  };
+};
+
+const insertChatRoom = async (userData, bodyData) => {
+  const { id: user_id } = userData;
+  const { name, description, chat_type } = bodyData;
+  return await prisma.chat_room.create({
+    data: {
+      name,
+      description,
+      chat_type,
+      user_id: Number(user_id),
+    },
+  });
+};
+
+const insertChatRoomMember = async (userData, chatRoomData) => {
+  const { id: user_id, email, nickname, loginType, roleType } = userData;
+  const { id: chat_room_id } = chatRoomData;
+  return await prisma.chat_room_member.create({
+    data: {
+      email,
+      nickname,
+      loginType,
+      roleType,
+      chat_room_id: Number(chat_room_id),
+      user_id: Number(user_id),
+    },
+  });
+};
+
+const ChatRepository = {
+  findChatRoomById,
+  findChatRoomWithMembersById,
+  findChatRoomsWithFilters,
+  findChatRoomList,
+  insertChatRoom,
+  insertChatRoomMember,
+};
 
 export default ChatRepository;

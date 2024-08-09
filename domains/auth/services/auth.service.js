@@ -1,10 +1,12 @@
-import * as AuthRepository from '../repositories/auth.repository';
-
-import redisClient from '../../../common/utils/redisClient';
-import getExpirationInSeconds from '../../../common/utils/expireTime';
-
+import ENV from '../../../common/utils/env';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
+import * as AuthRepository from '../repositories/auth.repository';
+import getExpirationInSeconds from '../../../common/utils/expireTime';
+
+import RedisManager from '../../../common/connection/redisManager';
+
+const redisClient = RedisManager.getClient();
 
 export async function signUpUser(bodyData) {
   const { password } = bodyData;
@@ -29,22 +31,22 @@ export async function signInUser(bodyData) {
   // prettier-ignore
   const accessToken = jwt.sign(
     { id: user.id, email: user.email }, 
-    process.env.JWT_SECRET_KEY01, 
-    {expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION,
+    ENV.JWT_SECRET_KEY01, 
+    {expiresIn: ENV.JWT_ACCESS_TOKEN_EXPIRATION,
   });
 
   // prettier-ignore
   const refreshToken = jwt.sign(
     { id: user.id, email: user.email }, 
-    process.env.JWT_SECRET_KEY01, 
-    {expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRATION,}
+    ENV.JWT_SECRET_KEY01, 
+    {expiresIn: ENV.JWT_REFRESH_TOKEN_EXPIRATION,}
   );
 
   await redisClient.set(
     `refreshToken:${user.id}`,
     refreshToken,
     'EX',
-    getExpirationInSeconds(process.env.JWT_REFRESH_TOKEN_EXPIRATION)
+    getExpirationInSeconds(ENV.JWT_REFRESH_TOKEN_EXPIRATION)
   );
 
   return {
@@ -64,7 +66,7 @@ export async function generateNewAccessToken(oldAccessToken) {
   }
 
   try {
-    oldPayload = jwt.verify(oldAccessToken, process.env.JWT_SECRET_KEY01);
+    oldPayload = jwt.verify(oldAccessToken, ENV.JWT_SECRET_KEY01);
   } catch (error) {
     if (error.name === 'TokenExpiredError') {
       // 토큰이 만료된 경우
@@ -90,7 +92,7 @@ export async function generateNewAccessToken(oldAccessToken) {
   }
 
   try {
-    jwt.verify(refreshToken, process.env.JWT_SECRET_KEY01);
+    jwt.verify(refreshToken, ENV.JWT_SECRET_KEY01);
   } catch (error) {
     // 여기서 TokenExpiredError 으로 리플래쉬토큰 만료 처리 필요
     throw new Error('Invalid refresh token: ' + error.name);
@@ -98,8 +100,8 @@ export async function generateNewAccessToken(oldAccessToken) {
 
   const newAccessToken = jwt.sign(
     { id: oldPayload.id, email: oldPayload.email },
-    process.env.JWT_SECRET_KEY01,
-    { expiresIn: process.env.JWT_ACCESS_TOKEN_EXPIRATION }
+    ENV.JWT_SECRET_KEY01,
+    { expiresIn: ENV.JWT_ACCESS_TOKEN_EXPIRATION }
   );
 
   return newAccessToken;
