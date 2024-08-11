@@ -13,7 +13,7 @@ export async function userSingIn(req, res) {
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
-    sameSite: 'None',
+    // sameSite: 'None',
   });
   res.status(200).json(certifiedUser);
 }
@@ -36,7 +36,7 @@ export async function NewAccessTokenGenerate(req, res) {
 
   res.cookie('accessToken', newAccessToken, {
     httpOnly: true,
-    sameSite: 'None',
+    // sameSite: 'None',
   });
   res.status(200).json('new accessToken is go');
 }
