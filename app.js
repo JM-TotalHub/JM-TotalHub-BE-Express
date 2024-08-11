@@ -18,6 +18,12 @@ app.use(
 );
 app.use(cookieParser());
 
+// 쿠키 로그 미들웨어
+app.use((req, res, next) => {
+  console.log('모든 요청의 쿠키 내용:', req.cookies);
+  next(); // 다음 미들웨어로 이동
+});
+
 // JWT 인증 미들웨어 - 필요시 적용
 // const excludedPaths = ['/tests'];
 // app.use(jwtAuthMiddleware(excludedPaths));
