@@ -23,6 +23,7 @@ const jwtAuthMiddleware = (req, res, next) => {
           message: 'Access Token 기간 만료',
         });
       } else {
+        console.log('인증 실패: ', info);
         return res.status(401).json({
           err: info.name,
           message: '인증내용에 문제 발생',
