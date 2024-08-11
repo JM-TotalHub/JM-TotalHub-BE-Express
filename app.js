@@ -11,7 +11,8 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://15.164.36.109',
+    origin: 'http://10.1.10.191',
+    // origin: 'http://15.164.36.109',
     // origin: `http://${ENV.REACT_LOCAL_HOST}:${ENV.REACT_LOCAL_PORT}`,
     credentials: true,
   })
