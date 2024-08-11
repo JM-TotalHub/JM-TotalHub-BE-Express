@@ -7,6 +7,8 @@ import prisma from '../../prisma';
 const cookieExtractor = (req) => {
   let token = null;
   if (req && req.cookies) {
+    console.log('req.cookies : ', req.cookies);
+    console.log('req.cookies[accessToken] : ', req.cookies['accessToken']);
     token = req.cookies['accessToken'];
   }
   return token;
