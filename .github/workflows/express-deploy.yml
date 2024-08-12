@@ -8,7 +8,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
       - name: 코드 체크아웃
         uses: actions/checkout@v3
@@ -26,7 +26,7 @@ jobs:
       - name: Node 설치
         uses: actions/setup-node@v2
         with:
-          node-version: "20.14.0"
+          node-version: '20.14.0'
 
       - name: 의존성 설치
         run: npm install
@@ -79,8 +79,9 @@ jobs:
             export JWT_SECRET_KEY01=${{ env.JWT_SECRET_KEY01 }}
             export JWT_ACCESS_TOKEN_EXPIRATION=${{ env.JWT_ACCESS_TOKEN_EXPIRATION }}
             export JWT_REFRESH_TOKEN_EXPIRATION=${{ env.JWT_REFRESH_TOKEN_EXPIRATION }}
+            # 엔진엑스 서버
+            export NGINX_SERVER_EC2_HOST=${{ env.NGINX_SERVER_EC2_HOST }}
             cd express
             sudo -E docker-compose pull express 
             sudo -E docker-compose up -d express  
             sudo -E docker-compose logs express
-
