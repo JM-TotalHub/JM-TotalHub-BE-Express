@@ -11,8 +11,6 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(
   cors({
-    // origin: 'http://10.3.0.149',
-    // origin: 'http://10.1.10.191',
     origin: 'http://15.164.36.109',
     // origin: `http://${ENV.REACT_LOCAL_HOST}:${ENV.REACT_LOCAL_PORT}`,
     credentials: true,
@@ -24,6 +22,7 @@ app.use((req, res, next) => {
   console.log('Request URL:', req.url);
   console.log('Request Method:', req.method);
   console.log('Request Headers:', req.headers);
+  console.log('SIGNAL_SERVER_BASE_URL : ', ENV.SIGNAL_SERVER_BASE_URL);
   next();
 });
 
