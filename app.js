@@ -22,7 +22,7 @@ app.use((req, res, next) => {
   console.log('Request URL:', req.url);
   console.log('Request Method:', req.method);
   console.log('Request Headers:', req.headers);
-  console.log('SIGNAL_SERVER_BASE_URL : ', ENV.SIGNAL_SERVER_BASE_URL);
+  console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
   next();
 });
 
