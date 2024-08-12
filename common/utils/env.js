@@ -6,11 +6,11 @@ const isProd = process.env.EXPRESS_SERVER_ENV_STATUS === 'prod';
 
 const ENV = {
   // 엔진엑스 관련
-  NGINX_SERVER01_EC2_HOST: process.env.NGINX_SERVER01_EC2_HOST,
+  NGINX_SERVER_EC2_HOST: process.env.NGINX_SERVER_EC2_HOST,
 
   // 시그널 서버 api (배포: 엔진 엑스 서버/ 개발: 로컬 시그널 서버)
-  SIGNAL_SERVER_BASE_URL: isProd
-    ? `http://${process.env.NGINX_SERVER01_EC2_HOST}`
+  NGINX_SERVER_EC2_HOST: isProd
+    ? `http://${process.env.NGINX_SERVER_EC2_HOST}`
     : `http://${process.env.SIGNAL_LOCAL_HOST}:${process.env.SIGNAL_LOCAL_PORT}`,
 
   // Express 서버 데이터베이스 관련

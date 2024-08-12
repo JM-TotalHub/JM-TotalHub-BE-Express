@@ -2,12 +2,12 @@ import ENV from '../utils/env';
 import axios from 'axios';
 
 const api = (() => {
-  console.log(ENV.SIGNAL_SERVER_BASE_URL);
+  console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
 
-  const SIGNAL_SERVER_BASE_URL = ENV.SIGNAL_SERVER_BASE_URL;
+  // const NGINX_SERVER_EC2_HOST = ENV.NGINX_SERVER_EC2_HOST;
 
   const signalApi = axios.create({
-    baseURL: SIGNAL_SERVER_BASE_URL,
+    baseURL: ENV.NGINX_SERVER_EC2_HOST,
   });
 
   const setupInterceptors = () => {
