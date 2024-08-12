@@ -7,7 +7,7 @@ const api = (() => {
   // const NGINX_SERVER_EC2_HOST = ENV.NGINX_SERVER_EC2_HOST;
 
   const signalApi = axios.create({
-    baseURL: ENV.NGINX_SERVER_EC2_HOST,
+    baseURL: `${ENV.NGINX_SERVER_EC2_HOST}/signal`,
   });
 
   const setupInterceptors = () => {
