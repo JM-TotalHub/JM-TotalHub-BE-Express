@@ -81,6 +81,8 @@ jobs:
             export JWT_REFRESH_TOKEN_EXPIRATION=${{ env.JWT_REFRESH_TOKEN_EXPIRATION }}
             # 엔진엑스 서버
             export NGINX_SERVER_EC2_HOST=${{ env.NGINX_SERVER_EC2_HOST }}
+            # 구동환경 
+            export EXPRESS_SERVER_ENV_STATUS=${{ env.EXPRESS_SERVER_ENV_STATUS }}
             cd express
             sudo -E docker-compose pull express 
             sudo -E docker-compose up -d express  
