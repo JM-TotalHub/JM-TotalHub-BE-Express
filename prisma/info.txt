@@ -5,8 +5,12 @@
 npx prisma migrate dev --name <이름>
 이건 지금 로직상 필히 개발환경에서 미리 해서 마이그레이션 파일을 만들어줘야함
 
-
 3. 새로운 마이그레이션을 prisma 클라이언트에 적용 (이건 안해도됨 배포할 때 적용됨, 근데 rds 기반으로 테스트할라면 해야함 )
 npx prisma generate 
 
 4. epxress 동작시 prisma 클라이언트가 DB에 접근해서 쿼리문을 적용하여 스키마 내용적용
+
+
+## npx prisma db push
+빈 DB에 프리즈마 스키마 적용할 때 
+실수로 테스트 DB같은거 초기화 될 때 사용하면 됨  

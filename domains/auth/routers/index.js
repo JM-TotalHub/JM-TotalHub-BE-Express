@@ -13,5 +13,6 @@ authRouter.post(
   '/new-token',
   errorWrapper(AuthController.NewAccessTokenGenerate)
 );
+authRouter.get('/user-info', errorWrapper(AuthController.userInfo));
 
 export default authRouter;

@@ -11,8 +11,9 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(
   cors({
-    origin: 'http://15.164.36.109',
+    // origin: 'http://15.164.36.109',
     // origin: `http://${ENV.REACT_LOCAL_HOST}:${ENV.REACT_LOCAL_PORT}`,
+    origin: ENV.REACT_SERVER_EC2_PUBLIC_HOST,
     credentials: true,
   })
 );
@@ -28,7 +29,7 @@ app.use((req, res, next) => {
 
 // 쿠키 로그 미들웨어
 app.use((req, res, next) => {
-  console.log('모든 요청의 쿠키 내용:', req.cookies);
+  console.log('요청의 쿠키 내용:', req.cookies);
   console.log('accessToken : ', req.cookies['accessToken']);
   next(); // 다음 미들웨어로 이동
 });

@@ -14,6 +14,11 @@ const ENV = {
     ? `http://${process.env.NGINX_SERVER_EC2_HOST}`
     : `http://${process.env.SIGNAL_LOCAL_HOST}:${process.env.SIGNAL_LOCAL_PORT}`,
 
+  // CORS용 리액트 서버 호스트 (배포: 웹서버(80포트) / 개발: 로컬 리액트 서버)
+  REACT_SERVER_EC2_PUBLIC_HOST: isProd
+    ? `http://${process.env.REACT_SERVER01_EC2_PUBLIC_HOST}`
+    : `http://${process.env.REACT_LOCAL_HOST}:${process.env.REACT_LOCAL_PORT}`,
+
   // Express 서버 데이터베이스 관련
   EXPRESS_SERVER01_DATABASE_URL: process.env.EXPRESS_SERVER01_DATABASE_URL,
 

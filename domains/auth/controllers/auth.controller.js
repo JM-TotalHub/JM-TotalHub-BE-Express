@@ -9,13 +9,13 @@ export async function userSingUp(req, res) {
 
 export async function userSingIn(req, res) {
   const bodyData = req.body;
-  const { accessToken, certifiedUser } = await AuthService.signInUser(bodyData);
+  const { accessToken, user } = await AuthService.signInUser(bodyData);
 
   res.cookie('accessToken', accessToken, {
     httpOnly: true,
     // sameSite: 'None',
   });
-  res.status(200).json(certifiedUser);
+  res.status(200).json(user);
 }
 
 export async function NewAccessTokenGenerate(req, res) {
@@ -39,4 +39,27 @@ export async function NewAccessTokenGenerate(req, res) {
     // sameSite: 'None',
   });
   res.status(200).json('new accessToken is go');
+}
+
+export async function userInfo(req, res) {
+  const token = req.cookies['accessToken'];
+  console.log(`userInfo 의 token : ${token}`);
+
+  if (!token || token === 'undefined') {
+    console.log('사용자 정보를 얻기 위한 토큰없음');
+    res.status(200).json();
+  } else {
+    console.log('사용자 정보를 얻기 성공');
+    const userInfo = await AuthService.getUserInfo(token);
+    console.log(`유저정보 전달내용 : ${userInfo}`);
+
+    if (userInfo.name === 'TokenExpiredError') {
+      res.status(401).json({
+        err: token.name,
+        message: 'Access Token 기간 만료',
+      });
+    } else {
+      res.status(200).json(userInfo);
+    }
+  }
 }

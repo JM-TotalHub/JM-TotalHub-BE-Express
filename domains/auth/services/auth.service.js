@@ -30,14 +30,14 @@ export async function signInUser(bodyData) {
 
   // prettier-ignore
   const accessToken = jwt.sign(
-    { id: user.id, email: user.email }, 
+    { id: user.id, email: user.email, nickname: user.nickname, loginType: user.loginType, roleType: user.roleType }, 
     ENV.JWT_SECRET_KEY01, 
     {expiresIn: ENV.JWT_ACCESS_TOKEN_EXPIRATION,
   });
 
   // prettier-ignore
   const refreshToken = jwt.sign(
-    { id: user.id, email: user.email }, 
+    { id: user.id, email: user.email, nickname: user.nickname, loginType: user.loginType, roleType: user.roleType }, 
     ENV.JWT_SECRET_KEY01, 
     {expiresIn: ENV.JWT_REFRESH_TOKEN_EXPIRATION,}
   );
@@ -52,7 +52,10 @@ export async function signInUser(bodyData) {
   return {
     accessToken,
     user: {
+      id: user.id,
       email: user.email,
+      nickname: user.nickname,
+      loginType: user.loginType,
       roleType: user.roleType,
     },
   };
@@ -105,4 +108,24 @@ export async function generateNewAccessToken(oldAccessToken) {
   );
 
   return newAccessToken;
+}
+
+export async function getUserInfo(token) {
+  console.log('동작중');
+  let payload = null;
+  try {
+    payload = jwt.verify(token, ENV.JWT_SECRET_KEY01);
+  } catch (error) {
+    console.log(error.name);
+    return error;
+  }
+
+  console.log(`payload : ${payload}`);
+
+  const userInfo = await AuthRepository.findUserByUserId(payload.id);
+
+  console.log(`유저정보 서비스 로직 : ${userInfo}`);
+  console.log(userInfo);
+
+  return userInfo;
 }

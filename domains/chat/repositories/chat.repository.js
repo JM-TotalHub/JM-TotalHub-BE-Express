@@ -55,7 +55,7 @@ const findChatRoomList = async (userId, queryData) => {
 
   let where = {
     id: {
-      in: chatRoomIds, // 사용자가 참여 중인 방 필터링
+      // in: chatRoomIds, // 사용자가 참여 중인 방 필터링
     },
     chat_type: {
       in: ['one_to_one', 'private', 'public'], // 원하는 방 타입 필터링
@@ -115,6 +115,18 @@ const insertChatRoomMember = async (userData, chatRoomData) => {
   });
 };
 
+const findRecentChatRoomMessages = async (chatRoomId, amount) => {
+  return await prisma.chat_message.findMany({
+    where: {
+      chat_room_id: Number(chatRoomId),
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+    take: amount,
+  });
+};
+
 const ChatRepository = {
   findChatRoomById,
   findChatRoomWithMembersById,
@@ -122,6 +134,7 @@ const ChatRepository = {
   findChatRoomList,
   insertChatRoom,
   insertChatRoomMember,
+  findRecentChatRoomMessages,
 };
 
 export default ChatRepository;
