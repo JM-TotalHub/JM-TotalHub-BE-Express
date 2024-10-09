@@ -10,13 +10,6 @@ import * as chatDto from '../dto/chat.dto';
 
 const chatRouter = express.Router();
 
-// 단순 채팅방 조회
-chatRouter.get(
-  '/chat-rooms/:chatRoomId',
-  jwtAuthMiddleware,
-  errorWrapper(ChatController.chatRoomDetails)
-);
-
 // 채팅방 참가
 chatRouter.post(
   '/chat-rooms/:chatRoomId/join',
@@ -37,6 +30,24 @@ chatRouter.post(
   '/chat-rooms',
   jwtAuthMiddleware,
   errorWrapper(ChatController.chatRoomAdd)
+);
+
+// 채팅방 메시지 저장
+chatRouter.post(
+  '/chat-rooms/messages',
+  errorWrapper(ChatController.chatRoomMessageAdd)
+);
+
+chatRouter.get(
+  '/chat-rooms/messages-load',
+  errorWrapper(ChatController.chatRoomMessageList)
+);
+
+// 단순 채팅방 조회
+chatRouter.get(
+  '/chat-rooms/:chatRoomId',
+  jwtAuthMiddleware,
+  errorWrapper(ChatController.chatRoomDetails)
 );
 
 export default chatRouter;

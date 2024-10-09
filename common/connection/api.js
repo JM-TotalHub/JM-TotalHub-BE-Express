@@ -32,7 +32,7 @@ const api = (() => {
         return response;
       },
       (error) => {
-        console.log('응답 오류:', error);
+        console.log('응답 오류:', error.message);
         return Promise.reject(error);
       }
     );
