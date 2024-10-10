@@ -91,13 +91,37 @@ const findChatRoomList = async (userId, queryData) => {
 
 const insertChatRoom = async (userData, bodyData) => {
   const { id: user_id } = userData;
-  const { name, description, chat_type } = bodyData;
+  const { name, description, chatType: chat_type } = bodyData;
   return await prisma.chat_room.create({
     data: {
       name,
       description,
       chat_type,
       user_id: Number(user_id),
+    },
+  });
+};
+
+const deleteChatRoom = async (chatRoomId) => {
+  return await prisma.chat_room.delete({
+    where: {
+      id: Number(chatRoomId), // chatRoomId 조건
+    },
+  });
+};
+
+const updateChatRoom = async (chatRoomId, bodyData) => {
+  console.log('채팅방 수정 chatRoomId : ', chatRoomId, 'bodyData : ', bodyData);
+
+  const { name, description, chat_type } = bodyData;
+  return await prisma.chat_room.update({
+    where: {
+      id: Number(chatRoomId),
+    },
+    data: {
+      name,
+      description,
+      chat_type,
     },
   });
 };
@@ -175,6 +199,8 @@ const ChatRepository = {
   findChatRoomsWithFilters,
   findChatRoomList,
   insertChatRoom,
+  deleteChatRoom,
+  updateChatRoom,
   insertChatRoomMember,
   findRecentChatRoomMessages,
   insertChatRoomMessages,

@@ -34,6 +34,14 @@ const createChatRoom = async (userData, bodyData) => {
   return createdChatRoom;
 };
 
+const deleteChatRoom = async (chatRoomId) => {
+  return await ChatRepository.deleteChatRoom(chatRoomId);
+};
+
+const updateChatRoom = async (chatRoomId, bodyData) => {
+  return await ChatRepository.updateChatRoom(chatRoomId, bodyData);
+};
+
 const joinChatRoom = async (userData, chatRoomId) => {
   const chatRoomData =
     await ChatRepository.findChatRoomWithMembersById(chatRoomId);
@@ -115,6 +123,8 @@ const ChatService = {
   findChatRoom,
   findChatRoomList,
   createChatRoom,
+  updateChatRoom,
+  deleteChatRoom,
   joinChatRoom,
   createChatRoomMessages,
   findChatRoomMessageList,

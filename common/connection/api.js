@@ -2,7 +2,7 @@ import ENV from '../utils/env';
 import axios from 'axios';
 
 const api = (() => {
-  console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
+  // console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
 
   // const NGINX_SERVER_EC2_HOST = ENV.NGINX_SERVER_EC2_HOST;
 

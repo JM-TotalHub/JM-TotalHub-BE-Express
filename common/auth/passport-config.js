@@ -7,15 +7,14 @@ import prisma from '../../prisma';
 const cookieExtractor = (req) => {
   let token = null;
   if (req && req.cookies) {
-    console.log('req.cookies : ', req.cookies);
-    console.log('req.cookies[accessToken] : ', req.cookies['accessToken']);
+    // console.log('req.cookies : ', req.cookies);
+    // console.log('req.cookies[accessToken] : ', req.cookies['accessToken']);
     token = req.cookies['accessToken'];
   }
   return token;
 };
 
 const opts = {
-  // jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
   secretOrKey: ENV.JWT_SECRET_KEY01,
 };

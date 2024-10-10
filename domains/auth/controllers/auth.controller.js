@@ -22,7 +22,7 @@ export async function NewAccessTokenGenerate(req, res) {
   // const headerData = req.headers;
   // const oldAccessToken = req.headers.cookie;
   const oldAccessToken = req.cookies['accessToken'];
-  console.log('들어온 접근토큰 : ' + oldAccessToken);
+  // console.log('들어온 접근토큰 : ' + oldAccessToken);
   const newAccessToken =
     await AuthService.generateNewAccessToken(oldAccessToken);
 
