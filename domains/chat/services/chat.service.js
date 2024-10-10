@@ -14,6 +14,8 @@ import api from '../../../common/connection/api';
 import ChatRepository from '../repositories/chat.repository';
 
 const findChatRoom = async (userId, chatRoomId) => {
+  console.log('이거 호출됨 서비스');
+
   return await ChatRepository.findChatRoomById(chatRoomId);
 };
 
@@ -30,6 +32,14 @@ const createChatRoom = async (userData, bodyData) => {
   await ChatRepository.insertChatRoomMember(userData, createdChatRoom);
 
   return createdChatRoom;
+};
+
+const deleteChatRoom = async (chatRoomId) => {
+  return await ChatRepository.deleteChatRoom(chatRoomId);
+};
+
+const updateChatRoom = async (chatRoomId, bodyData) => {
+  return await ChatRepository.updateChatRoom(chatRoomId, bodyData);
 };
 
 const joinChatRoom = async (userData, chatRoomId) => {
@@ -51,7 +61,7 @@ const joinChatRoom = async (userData, chatRoomId) => {
     chatRoomData,
   });
 
-  console.log('signalResponse.data : ', signalResponse.data);
+  // console.log('signalResponse.data : ', signalResponse.data);
 
   // 시그널 서버의 채팅방 정보와 DB에서 최근 30개의 메시지 가져오기
   const recentMessages = await ChatRepository.findRecentChatRoomMessages(
@@ -59,11 +69,17 @@ const joinChatRoom = async (userData, chatRoomId) => {
     30
   );
 
+  const dbMessage = recentMessages.reverse();
+
+  // console.log('dbMessage : ', dbMessage);
+
   // Redis에서 가져온 메시지와 DB에서 가져온 메시지 결합
   const totalRecentMessages = [
     ...signalResponse.data.chatRoomMessages, // Redis에서 가져온 메시지
-    ...recentMessages, // DB에서 가져온 최근 메시지
+    ...dbMessage, // DB에서 가져온 최근 메시지
   ];
+
+  // console.log('totalRecentMessages : ', totalRecentMessages);
 
   // 최종 응답 구성(레디스 최신 + DB 최근 메시지30개)
   const response = {
@@ -76,11 +92,42 @@ const joinChatRoom = async (userData, chatRoomId) => {
   return response;
 };
 
+const createChatRoomMessages = async (chatRoomId, messages) => {
+  const createdChatRoomMessages = await ChatRepository.insertChatRoomMessages(
+    chatRoomId,
+    messages
+  );
+
+  // console.log('DB 저장 확인용 채팅 메시지 로그 : ', createdChatRoomMessages);
+
+  return;
+};
+
+const findChatRoomMessageList = async (
+  chatRoomId,
+  lastMessageId,
+  messageNum
+) => {
+  const olderMessage = await ChatRepository.findChatRoomMessages(
+    chatRoomId,
+    lastMessageId,
+    messageNum
+  );
+
+  const dbMessage = olderMessage.reverse();
+
+  return dbMessage;
+};
+
 const ChatService = {
   findChatRoom,
   findChatRoomList,
   createChatRoom,
+  updateChatRoom,
+  deleteChatRoom,
   joinChatRoom,
+  createChatRoomMessages,
+  findChatRoomMessageList,
 };
 
 export default ChatService;

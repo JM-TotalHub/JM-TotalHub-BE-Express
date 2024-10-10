@@ -13,6 +13,8 @@
 import prisma from '../../../prisma';
 
 const findChatRoomById = async (chatRoomId) => {
+  console.log('이거 호출됨 서비스 레포지토리');
+
   return await prisma.chat_room.findUniqueOrThrow({
     where: {
       id: Number(chatRoomId),
@@ -89,13 +91,37 @@ const findChatRoomList = async (userId, queryData) => {
 
 const insertChatRoom = async (userData, bodyData) => {
   const { id: user_id } = userData;
-  const { name, description, chat_type } = bodyData;
+  const { name, description, chatType: chat_type } = bodyData;
   return await prisma.chat_room.create({
     data: {
       name,
       description,
       chat_type,
       user_id: Number(user_id),
+    },
+  });
+};
+
+const deleteChatRoom = async (chatRoomId) => {
+  return await prisma.chat_room.delete({
+    where: {
+      id: Number(chatRoomId), // chatRoomId 조건
+    },
+  });
+};
+
+const updateChatRoom = async (chatRoomId, bodyData) => {
+  console.log('채팅방 수정 chatRoomId : ', chatRoomId, 'bodyData : ', bodyData);
+
+  const { name, description, chat_type } = bodyData;
+  return await prisma.chat_room.update({
+    where: {
+      id: Number(chatRoomId),
+    },
+    data: {
+      name,
+      description,
+      chat_type,
     },
   });
 };
@@ -127,14 +153,58 @@ const findRecentChatRoomMessages = async (chatRoomId, amount) => {
   });
 };
 
+const insertChatRoomMessages = async (chatRoomId, messages) => {
+  const chatRoomMessages = messages.map((message) => ({
+    content: message.message,
+    user: {
+      connect: { id: Number(message.userId) }, // user_id로 연결
+    },
+    chat_room: {
+      connect: { id: Number(chatRoomId) },
+    },
+    created_at: new Date(message.createdAt),
+  }));
+
+  // 트랜잭션을 사용해 모든 메시지를 한 번에 저장
+  const createdMessages = await prisma.$transaction(
+    chatRoomMessages.map((message) =>
+      prisma.chat_message.create({ data: message })
+    )
+  );
+
+  console.log('DB 저장된 채팅 메시지:', createdMessages);
+  return createdMessages;
+};
+
+const findChatRoomMessages = async (chatRoomId, lastMessageId, messageNum) => {
+  console.log('레포지토리 => ', chatRoomId, lastMessageId, messageNum);
+
+  return await prisma.chat_message.findMany({
+    where: {
+      chat_room_id: Number(chatRoomId),
+      id: {
+        lt: lastMessageId ? Number(lastMessageId) : undefined, // lastMessageId보다 작은 메시지
+      },
+    },
+    orderBy: {
+      created_at: 'desc',
+    },
+    take: Number(messageNum),
+  });
+};
+
 const ChatRepository = {
   findChatRoomById,
   findChatRoomWithMembersById,
   findChatRoomsWithFilters,
   findChatRoomList,
   insertChatRoom,
+  deleteChatRoom,
+  updateChatRoom,
   insertChatRoomMember,
   findRecentChatRoomMessages,
+  insertChatRoomMessages,
+  findChatRoomMessages,
 };
 
 export default ChatRepository;

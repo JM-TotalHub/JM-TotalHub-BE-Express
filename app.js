@@ -7,7 +7,12 @@ import express from 'express';
 const app = express();
 
 // 미들웨어
-app.use(morgan('dev'));
+import morgan from 'morgan';
+morgan.token('body', (req) => JSON.stringify(req.body));
+
+// app.use(morgan('dev'));
+app.use(morgan(':method :url :status :response-time ms :body'));
+
 app.use(express.json());
 app.use(
   cors({
@@ -19,20 +24,21 @@ app.use(
 );
 app.use(cookieParser());
 
-app.use((req, res, next) => {
-  console.log('Request URL:', req.url);
-  console.log('Request Method:', req.method);
-  console.log('Request Headers:', req.headers);
-  console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
-  next();
-});
+// 요청 파악용 로그 미들웨어
+// app.use((req, res, next) => {
+//   console.log('Request URL:', req.url);
+//   console.log('Request Method:', req.method);
+//   console.log('Request Headers:', req.headers);
+//   // console.log('NGINX_SERVER_EC2_HOST : ', ENV.NGINX_SERVER_EC2_HOST);
+//   next();
+// });
 
-// 쿠키 로그 미들웨어
-app.use((req, res, next) => {
-  console.log('요청의 쿠키 내용:', req.cookies);
-  console.log('accessToken : ', req.cookies['accessToken']);
-  next(); // 다음 미들웨어로 이동
-});
+// 쿠키 파악용 로그 미들웨어
+// app.use((req, res, next) => {
+//   console.log('요청의 쿠키 내용:', req.cookies);
+//   console.log('accessToken : ', req.cookies['accessToken']);
+//   next(); // 다음 미들웨어로 이동
+// });
 
 // JWT 인증 미들웨어 - 필요시 적용
 // const excludedPaths = ['/tests'];
@@ -53,7 +59,6 @@ app.get('/connect-test', (req, res) => {
 });
 
 // 예외처리 미들웨어
-import morgan from 'morgan';
 import errorHandler from './common/handler/error.js';
 app.use(errorHandler);
 
