@@ -9,6 +9,7 @@ const authRouter = express.Router();
 
 authRouter.post('/sign-up', errorWrapper(AuthController.userSingUp));
 authRouter.post('/sign-in', errorWrapper(AuthController.userSingIn));
+authRouter.post('/sign-out', errorWrapper(AuthController.userSingOut));
 authRouter.post(
   '/new-token',
   errorWrapper(AuthController.NewAccessTokenGenerate)

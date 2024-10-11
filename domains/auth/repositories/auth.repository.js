@@ -1,11 +1,12 @@
 import prisma from '../../../prisma';
 
 export async function insertUser(bodyData) {
-  const { email, password, loginType, roleType } = bodyData;
+  const { email, password, nickname, loginType, roleType } = bodyData;
   return await prisma.user.create({
     data: {
       email,
       password,
+      nickname,
       loginType,
       roleType,
     },
