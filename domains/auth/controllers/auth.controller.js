@@ -18,6 +18,12 @@ export async function userSingIn(req, res) {
   res.status(200).json(user);
 }
 
+export async function userSingOut(req, res) {
+  const bodyData = req.body;
+  res.clearCookie('accessToken');
+  res.status(201).json({ message: '로그아웃되었습니다.' });
+}
+
 export async function NewAccessTokenGenerate(req, res) {
   // const headerData = req.headers;
   // const oldAccessToken = req.headers.cookie;

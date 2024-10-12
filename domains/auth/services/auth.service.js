@@ -13,6 +13,11 @@ export async function signUpUser(bodyData) {
   const hashedPassword = await bcrypt.hash(password, 10);
   bodyData.password = hashedPassword;
 
+  // 일단 강제로 회원로그인 & 일반사용자을 강제
+  // admin은 따로 DB에 직접 입력하는 방식으로 부여
+  bodyData.loginType = 'normal';
+  bodyData.roleType = 'normal';
+
   return await AuthRepository.insertUser(bodyData);
 }
 
