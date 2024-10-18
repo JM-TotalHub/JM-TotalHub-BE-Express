@@ -33,10 +33,21 @@ async function findPostListByBoardId(boardId, queryData) {
     orderBy: {
       [sortField]: sortOrder,
     },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          nickname: true,
+        },
+      },
+    },
   });
 
   const totalDataCount = await prisma.post.count({ where });
   const totalPage = Math.ceil(totalDataCount / dataPerPage);
+
+  console.log('게시글 목록 : ', postList);
 
   return {
     postList,
@@ -61,6 +72,15 @@ async function findPostById(postId) {
   return await prisma.post.findUniqueOrThrow({
     where: {
       id: Number(postId),
+    },
+    include: {
+      user: {
+        select: {
+          id: true,
+          email: true,
+          nickname: true,
+        },
+      },
     },
   });
 }
