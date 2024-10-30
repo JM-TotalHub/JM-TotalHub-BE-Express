@@ -20,7 +20,7 @@ async function findPostListByBoardId(boardId, queryData) {
     board_id: Number(boardId),
   };
 
-  if (searchType && searchText) {
+  if (searchType && searchText.trim()) {
     where[searchType] = {
       contains: searchText,
     };
