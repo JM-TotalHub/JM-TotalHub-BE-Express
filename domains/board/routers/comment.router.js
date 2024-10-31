@@ -6,6 +6,7 @@ import errorWrapper from '../../../common/error/error-wrapper';
 
 import * as CommentController from '../controllers/comment.controller';
 import * as CommentDto from '../dto/comment.dto';
+import jwtAuthMiddleware from '../../../common/auth/jwtAuthMiddleware';
 
 const commentRouter = express.Router();
 const commentWithPostIdRouter = express.Router({ mergeParams: true });
@@ -18,6 +19,7 @@ commentWithPostIdRouter.get(
 
 commentWithPostIdRouter.post(
   '/',
+  jwtAuthMiddleware,
   escapeHtmlMiddleware,
   validationMiddleware(CommentDto.CommentCreateDto),
   errorWrapper(CommentController.commentAdd)

@@ -53,13 +53,14 @@ async function findCommentById(commentId) {
   });
 }
 
-async function insertComment(postId, bodyData) {
+async function insertComment(userId, postId, bodyData) {
   const { content } = bodyData;
 
   return await prisma.comment.create({
     data: {
       content,
       post_id: Number(postId),
+      user_id: Number(userId),
     },
   });
 }

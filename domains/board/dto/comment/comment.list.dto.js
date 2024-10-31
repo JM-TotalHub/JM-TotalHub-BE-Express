@@ -21,7 +21,7 @@ const CommentListQueryDto = Joi.object({
     'string.max': 'Search text must be at most 100 characters long',
   }),
   sortField: Joi.string()
-    .valid('id', 'content')
+    .valid('id', 'created_at')
     .default('id')
     .messages({
       'string.base': 'Sort field must be a string',

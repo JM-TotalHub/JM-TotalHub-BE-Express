@@ -13,8 +13,14 @@
 import prisma from '../../../prisma';
 
 async function findPostListByBoardId(boardId, queryData) {
-  const { pageNum, dataPerPage, searchType, searchText, sortField, sortOrder } =
-    queryData;
+  const {
+    pageNum,
+    dataPerPage,
+    searchType,
+    searchText,
+    sortField = 'created_at',
+    sortOrder = 'asc',
+  } = queryData;
 
   let where = {
     board_id: Number(boardId),
@@ -46,8 +52,6 @@ async function findPostListByBoardId(boardId, queryData) {
 
   const totalDataCount = await prisma.post.count({ where });
   const totalPage = Math.ceil(totalDataCount / dataPerPage);
-
-  console.log('게시글 목록 : ', postList);
 
   return {
     postList,
