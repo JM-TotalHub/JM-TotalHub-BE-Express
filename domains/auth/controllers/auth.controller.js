@@ -55,9 +55,7 @@ export async function userInfo(req, res) {
     console.log('사용자 정보를 얻기 위한 토큰없음');
     res.status(200).json();
   } else {
-    console.log('사용자 정보를 얻기 성공');
     const userInfo = await AuthService.getUserInfo(token);
-    console.log(`유저정보 전달내용 : ${userInfo}`);
 
     if (userInfo.name === 'TokenExpiredError') {
       res.status(401).json({
