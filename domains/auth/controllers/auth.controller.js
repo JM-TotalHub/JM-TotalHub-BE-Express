@@ -67,3 +67,5 @@ export async function userInfo(req, res) {
     }
   }
 }
+
+export const userPasswordChange = async (req, res) => {};
