@@ -2,6 +2,7 @@ import express from 'express';
 import errorWrapper from '../../../common/error/error-wrapper';
 
 import * as AuthController from '../controllers/auth.controller';
+import jwtAuthMiddleware from '../../../common/auth/jwtAuthMiddleware';
 
 const authRouter = express.Router();
 
@@ -15,5 +16,11 @@ authRouter.post(
   errorWrapper(AuthController.NewAccessTokenGenerate)
 );
 authRouter.get('/user-info', errorWrapper(AuthController.userInfo));
+
+authRouter.post(
+  '/password',
+  jwtAuthMiddleware,
+  errorWrapper(AuthController.userInfo)
+);
 
 export default authRouter;

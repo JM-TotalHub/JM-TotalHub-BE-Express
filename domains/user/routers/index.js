@@ -2,8 +2,16 @@ import express from 'express';
 import errorWrapper from '../../../common/error/error-wrapper';
 
 import * as UserController from '../controllers/user.controller';
+import jwtAuthMiddleware from '../../../common/auth/jwtAuthMiddleware';
+import escapeHtmlMiddleware from '../../../common/middleware/escape-html';
 
 const userRouter = express.Router();
 
-// userRouter.post('/login',
-//     errorWrapper(UserController.))
+userRouter.get(
+  '/info/:userId',
+  jwtAuthMiddleware,
+  escapeHtmlMiddleware,
+  errorWrapper(UserController.userDetails)
+);
+
+export default userRouter;

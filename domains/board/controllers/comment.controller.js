@@ -15,8 +15,13 @@ async function commentDetails(req, res) {
 
 async function commentAdd(req, res) {
   const { postId } = req.params;
+  const userId = req.user.id;
   const bodyData = req.body;
-  const createdComment = await CommentService.createComment(postId, bodyData);
+  const createdComment = await CommentService.createComment(
+    userId,
+    postId,
+    bodyData
+  );
   res.status(201).json(createdComment);
 }
 

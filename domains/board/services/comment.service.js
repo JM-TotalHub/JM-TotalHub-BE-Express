@@ -20,8 +20,8 @@ async function findComment(commentId) {
   return await CommentRepository.findCommentById(commentId);
 }
 
-async function createComment(postId, bodyData) {
-  return await CommentRepository.insertComment(postId, bodyData);
+async function createComment(userId, postId, bodyData) {
+  return await CommentRepository.insertComment(userId, postId, bodyData);
 }
 
 async function updateComment(commentId, bodyData) {

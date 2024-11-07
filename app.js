@@ -46,11 +46,13 @@ app.use(cookieParser());
 
 // 라우터 (도메인 분류)
 import authRouter from './domains/auth/routers';
+import userRouter from './domains/user/routers';
 import boardRouter from './domains/board/routers';
 import chatRouter from './domains/chat/routers/index.js';
 import testRouter from './domains/test/routers/test.router.js';
 
 app.use('/auth', authRouter);
+app.use('/users', userRouter);
 app.use('/tests', testRouter);
 app.use('/boards', boardRouter);
 app.use('/chats', chatRouter);
