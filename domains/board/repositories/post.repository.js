@@ -137,7 +137,7 @@ async function findUserPostListByUserId(userId, queryData) {
 
   const postList = await prisma.post.findMany({
     skip: (pageNum - 1) * dataPerPage,
-    take: dataPerPage,
+    take: Number(dataPerPage),
     where,
     orderBy: {
       [sortField]: sortOrder,
