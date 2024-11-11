@@ -35,3 +35,27 @@ export async function findUserByUserId(userId) {
     },
   });
 }
+
+export async function findUserPasswordByUserId(userId) {
+  const response = await prisma.user.findFirstOrThrow({
+    where: {
+      id: Number(userId),
+    },
+    select: {
+      password: true,
+    },
+  });
+
+  return response.password;
+}
+
+export async function UpdateUserPassword(userId, newHashedPassword) {
+  return await prisma.user.update({
+    where: {
+      id: userId,
+    },
+    data: {
+      password: newHashedPassword,
+    },
+  });
+}

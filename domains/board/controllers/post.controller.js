@@ -1,6 +1,8 @@
 import * as PostService from '../services/post.service';
 
 async function postList(req, res) {
+  console.log('여기 지나감2');
+
   const { boardId } = req.params;
   const queryData = req.query;
   const postList = await PostService.findPostList(boardId, queryData);
@@ -17,6 +19,8 @@ async function postAdd(req, res) {
 }
 
 async function postDetails(req, res) {
+  console.log('여기 지나감3');
+
   const { postId } = req.params;
   const post = await PostService.findPost(postId);
   res.status(200).json(post);
@@ -35,4 +39,15 @@ async function postRemove(req, res) {
   res.status(204).send();
 }
 
-export { postList, postAdd, postDetails, postModify, postRemove };
+async function postUserList(req, res) {
+  console.log('여기 지나감1');
+  const userId = req.user.id;
+
+  // const { boardId } = req.params;
+
+  const queryData = req.query;
+  const postList = await PostService.findUserPostList(userId, queryData);
+  res.status(200).json(postList);
+}
+
+export { postList, postAdd, postDetails, postModify, postRemove, postUserList };

@@ -48,24 +48,23 @@ export async function NewAccessTokenGenerate(req, res) {
 }
 
 export async function userInfo(req, res) {
-  const token = req.cookies['accessToken'];
-  console.log(`userInfo 의 token : ${token}`);
+  const userId = req.user.id;
 
-  if (!token || token === 'undefined') {
-    console.log('사용자 정보를 얻기 위한 토큰없음');
-    res.status(200).json();
-  } else {
-    const userInfo = await AuthService.getUserInfo(token);
+  const userInfo = await AuthService.getUserInfo(userId);
 
-    if (userInfo.name === 'TokenExpiredError') {
-      res.status(401).json({
-        err: token.name,
-        message: 'Access Token 기간 만료',
-      });
-    } else {
-      res.status(200).json(userInfo);
-    }
-  }
+  res.status(200).json(userInfo);
 }
 
-export const userPasswordChange = async (req, res) => {};
+export const userPasswordModify = async (req, res) => {
+  const userId = req.user.id;
+  const { currentPassword, newPassword } = req.body;
+
+  // 후에 전처리 단계에서 확인하는 걸로 수정
+  if (!currentPassword || !newPassword) {
+    res.status(400).json({ message: '정보를 모두 입력해주세요.' });
+  }
+
+  await AuthService.UpdateUserPassword(userId, currentPassword, newPassword);
+
+  res.status(200).json({ message: '비밀번호가 성공적으로 변경되었습니다.' });
+};

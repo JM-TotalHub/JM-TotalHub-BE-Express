@@ -8,7 +8,7 @@ import escapeHtmlMiddleware from '../../../common/middleware/escape-html';
 const userRouter = express.Router();
 
 userRouter.get(
-  '/info/:userId',
+  '/info',
   jwtAuthMiddleware,
   escapeHtmlMiddleware,
   errorWrapper(UserController.userDetails)
