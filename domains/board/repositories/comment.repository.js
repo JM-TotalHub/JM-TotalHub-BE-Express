@@ -45,6 +45,61 @@ async function findCommentListByPostId(postId, queryData) {
   };
 }
 
+async function findUserCommentListByPostId(userId, queryData) {
+  console.log('여기들어옴');
+
+  const {
+    pageNum = 1,
+    dataPerPage = 10,
+    searchType = ' ',
+    searchText = ' ',
+    sortField = 'created_at',
+    sortOrder = 'desc',
+  } = queryData;
+
+  let where = {
+    user_id: Number(userId),
+  };
+
+  if (searchType && searchText.trim()) {
+    where[searchType] = {
+      contains: searchText,
+    };
+  }
+
+  const commentList = await prisma.comment.findMany({
+    skip: (pageNum - 1) * dataPerPage,
+    take: dataPerPage,
+    where,
+    include: {
+      post: {
+        select: {
+          id: true,
+          title: true,
+          board: {
+            select: {
+              id: true,
+              name: true,
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      [sortField]: sortOrder,
+    },
+  });
+
+  const totalDataCount = await prisma.comment.count({ where });
+  const totalPage = Math.ceil(totalDataCount / dataPerPage);
+
+  return {
+    commentList,
+    totalPage,
+    pageNum,
+  };
+}
+
 async function findCommentById(commentId) {
   return await prisma.comment.findUniqueOrThrow({
     where: {
@@ -92,4 +147,5 @@ export {
   insertComment,
   updateComment,
   deleteComment,
+  findUserCommentListByPostId,
 };

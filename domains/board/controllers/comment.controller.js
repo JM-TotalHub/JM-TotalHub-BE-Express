@@ -7,6 +7,18 @@ async function commentList(req, res) {
   res.status(200).json(commentList);
 }
 
+async function commentUserList(req, res) {
+  const userId = req.user.id;
+  const queryData = req.query;
+
+  const commentList = await CommentService.findUserCommentList(
+    userId,
+    queryData
+  );
+
+  res.status(200).json(commentList);
+}
+
 async function commentDetails(req, res) {
   const { commentId } = req.params;
   const commentDetails = await CommentService.findComment(commentId);
@@ -43,6 +55,7 @@ async function commentDelete(req, res) {
 
 export {
   commentList,
+  commentUserList,
   commentDetails,
   commentAdd,
   commentModify,

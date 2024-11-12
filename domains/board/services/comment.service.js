@@ -16,6 +16,10 @@ async function findCommentList(postId, queryData) {
   return await CommentRepository.findCommentListByPostId(postId, queryData);
 }
 
+async function findUserCommentList(userId, queryData) {
+  return await CommentRepository.findUserCommentListByPostId(userId, queryData);
+}
+
 async function findComment(commentId) {
   return await CommentRepository.findCommentById(commentId);
 }
@@ -38,4 +42,5 @@ export {
   createComment,
   updateComment,
   deleteComment,
+  findUserCommentList,
 };

@@ -143,11 +143,10 @@ async function findUserPostListByUserId(userId, queryData) {
       [sortField]: sortOrder,
     },
     include: {
-      user: {
+      board: {
         select: {
           id: true,
-          email: true,
-          nickname: true,
+          name: true,
         },
       },
     },
