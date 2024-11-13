@@ -23,8 +23,6 @@ const chatRoomDetails = async (req, res) => {
 };
 
 const chatRoomList = async (req, res) => {
-  console.log('chatRoomList 이거 호출됨');
-
   const queryData = req.query;
   const userId = req.user.id;
   const chatRoomList = await ChatService.findChatRoomList(userId, queryData);
