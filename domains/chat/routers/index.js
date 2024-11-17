@@ -42,7 +42,7 @@ chatRouter.post(
 chatRouter.get(
   '/chat-rooms',
   jwtAuthMiddleware,
-  validationMiddleware(chatDto.ChatRoomListDto),
+  // validationMiddleware(chatDto.ChatRoomListDto),
   errorWrapper(ChatController.chatRoomList)
 );
 

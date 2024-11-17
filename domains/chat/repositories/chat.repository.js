@@ -49,22 +49,50 @@ const findChatRoomsWithFilters = async (userId) => {
 };
 
 const findChatRoomList = async (userId, queryData) => {
-  const { pageNum, dataPerPage, searchType, searchText, sortField, sortOrder } =
-    queryData;
+  // console.log('레포지토리');
+  // console.log(userId);
+  // console.log(queryData);
+
+  // return null;
+
+  const {
+    pageNum = 1,
+    dataPerPage = 10,
+    searchType = 'title',
+    searchText = ' ',
+    sortField = 'created_at',
+    sortOrder = 'desc',
+    roomType = 'total',
+  } = queryData;
 
   // 유저 참가 채팅방 id 리스트 배열
   const chatRoomIds = await findChatRoomsWithFilters(userId);
 
-  let where = {
-    id: {
-      // in: chatRoomIds, // 사용자가 참여 중인 방 필터링
-    },
-    chat_type: {
-      in: ['one_to_one', 'private', 'public'], // 원하는 방 타입 필터링
-    },
-  };
+  let where = {};
 
-  if (searchType && searchText) {
+  // let where = {
+  //   id: {
+  //     // in: chatRoomIds, // 사용자가 참여 중인 방 필터링
+  //   },
+  // };
+
+  if (roomType === 'total') {
+    where.chat_type = {
+      in: ['one_to_one', 'private', 'public'], // 모든 방 타입을 포함
+    };
+  } else if (roomType === 'public') {
+    where.chat_type = {
+      in: ['public'], // 모든 방 타입을 포함
+    };
+  } else if (roomType === 'private') {
+    where.chat_type = {
+      in: ['one_to_one', 'private'], // 모든 방 타입을 포함
+    };
+  } else {
+    where.chat_type = roomType;
+  }
+
+  if (searchType && searchText.trim()) {
     where[searchType] = {
       contains: searchText,
     };
@@ -72,7 +100,7 @@ const findChatRoomList = async (userId, queryData) => {
 
   const chatRoomList = await prisma.chat_room.findMany({
     skip: (pageNum - 1) * dataPerPage,
-    take: dataPerPage,
+    take: Number(dataPerPage),
     where,
     orderBy: {
       [sortField]: sortOrder,
