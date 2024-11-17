@@ -15,12 +15,16 @@ authRouter.post(
   '/new-token',
   errorWrapper(AuthController.NewAccessTokenGenerate)
 );
-authRouter.get('/user-info', errorWrapper(AuthController.userInfo));
-
-authRouter.post(
-  '/password',
+authRouter.get(
+  '/user-info',
   jwtAuthMiddleware,
   errorWrapper(AuthController.userInfo)
+);
+
+authRouter.put(
+  '/password',
+  jwtAuthMiddleware,
+  errorWrapper(AuthController.userPasswordModify)
 );
 
 export default authRouter;

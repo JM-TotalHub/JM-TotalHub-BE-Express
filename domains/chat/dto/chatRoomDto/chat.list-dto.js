@@ -11,7 +11,7 @@ const ChatRoomListQueryDto = Joi.object({
     'number.integer': 'Data per page must be an integer',
     'number.min': 'Data per page must be at least 1',
   }),
-  searchType: Joi.string().valid('name').optional().messages({
+  searchType: Joi.string().valid('title').optional().messages({
     'string.base': 'Search type must be a string',
     'any.only': 'Search type must be either "name" or ""',
   }),
@@ -20,11 +20,11 @@ const ChatRoomListQueryDto = Joi.object({
     'string.max': 'Search text must be at most 100 characters long',
   }),
   sortField: Joi.string()
-    .valid('id', 'name')
+    .valid('id', 'created_at')
     .default('id')
     .messages({
       'string.base': 'Sort field must be a string',
-      'any.only': 'Sort field must be either "id" or "name"',
+      'any.only': 'Sort field must be either "id", "title", or "content"',
     })
     .optional(),
   sortOrder: Joi.string().valid('asc', 'desc').default('desc').messages({

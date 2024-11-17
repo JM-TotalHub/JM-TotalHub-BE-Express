@@ -110,10 +110,63 @@ async function deletePost(postId) {
   });
 }
 
+async function findUserPostListByUserId(userId, queryData) {
+  const {
+    pageNum = 1,
+    dataPerPage = 10,
+    boardId,
+    searchType = ' ',
+    searchText = ' ',
+    sortField = 'created_at',
+    sortOrder = 'asc',
+  } = queryData;
+
+  let where = {
+    user_id: Number(userId),
+  };
+
+  if (boardId) {
+    where.board_id = Number(boardId);
+  }
+
+  if (searchType && searchText.trim()) {
+    where[searchType] = {
+      contains: searchText,
+    };
+  }
+
+  const postList = await prisma.post.findMany({
+    skip: (pageNum - 1) * dataPerPage,
+    take: Number(dataPerPage),
+    where,
+    orderBy: {
+      [sortField]: sortOrder,
+    },
+    include: {
+      board: {
+        select: {
+          id: true,
+          name: true,
+        },
+      },
+    },
+  });
+
+  const totalDataCount = await prisma.post.count({ where });
+  const totalPage = Math.ceil(totalDataCount / dataPerPage);
+
+  return {
+    postList,
+    totalPage,
+    pageNum,
+  };
+}
+
 export {
   findPostListByBoardId,
   insertPost,
   findPostById,
   updatePost,
   deletePost,
+  findUserPostListByUserId,
 };

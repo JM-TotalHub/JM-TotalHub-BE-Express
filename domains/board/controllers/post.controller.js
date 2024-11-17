@@ -35,4 +35,14 @@ async function postRemove(req, res) {
   res.status(204).send();
 }
 
-export { postList, postAdd, postDetails, postModify, postRemove };
+async function postUserList(req, res) {
+  const userId = req.user.id;
+
+  // const { boardId } = req.params;
+
+  const queryData = req.query;
+  const postList = await PostService.findUserPostList(userId, queryData);
+  res.status(200).json(postList);
+}
+
+export { postList, postAdd, postDetails, postModify, postRemove, postUserList };

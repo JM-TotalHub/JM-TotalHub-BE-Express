@@ -19,6 +19,12 @@ postWithBoardIdRouter.get(
   errorWrapper(PostController.postList)
 );
 
+postRouter.get(
+  `/users`,
+  jwtAuthMiddleware,
+  errorWrapper(PostController.postUserList)
+);
+
 postWithBoardIdRouter.post(
   '/',
   jwtAuthMiddleware,

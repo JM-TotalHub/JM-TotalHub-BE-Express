@@ -20,6 +20,9 @@ const findChatRoom = async (userId, chatRoomId) => {
 };
 
 const findChatRoomList = async (userId, queryData) => {
+  console.log('서비스');
+  console.log(userId);
+  console.log(queryData);
   return await ChatRepository.findChatRoomList(userId, queryData);
 };
 

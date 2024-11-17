@@ -26,6 +26,12 @@ commentWithPostIdRouter.post(
 );
 
 commentRouter.get(
+  '/users',
+  jwtAuthMiddleware,
+  errorWrapper(CommentController.commentUserList)
+);
+
+commentRouter.get(
   '/:commentId',
   errorWrapper(CommentController.commentDetails)
 );

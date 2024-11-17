@@ -20,4 +20,15 @@ async function deletePost(postId) {
   return await PostRepository.deletePost(postId);
 }
 
-export { findPostList, createPost, findPost, updatePost, deletePost };
+async function findUserPostList(userId, queryData) {
+  return await PostRepository.findUserPostListByUserId(userId, queryData);
+}
+
+export {
+  findPostList,
+  createPost,
+  findPost,
+  updatePost,
+  deletePost,
+  findUserPostList,
+};

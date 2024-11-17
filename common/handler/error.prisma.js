@@ -38,29 +38,34 @@ export function handlePrismaError(error) {
       case 'P2002':
         // 고유 제약 조건 위반 오류
         throw new CustomError.DataBaseError(
+          'P2002',
           '고유 제약 조건 위반 오류 (Unique constraint violation) => ' +
             error.message
         );
       case 'P2025':
         // 레코드를 찾을 수 없음 오류
         throw new CustomError.DataBaseError(
+          'P2025',
           '레코드를 찾을 수 없음 오류 (Record not found) => ' + error.message
         );
       case 'P2003':
         // 외래 키 제약 조건 위반 오류
         throw new CustomError.DataBaseError(
+          'P2003',
           '외래 키 제약 조건 위반 오류 (Foreign key constraint violation) => ' +
             error.message
         );
       case 'P2004':
         // 잘못된 데이터베이스 연결 오류
         throw new CustomError.DataBaseError(
+          'P2004',
           '잘못된 데이터베이스 연결 오류 (Invalid database connection) => ' +
             error.message
         );
       default:
         // 알려진 기타 데이터베이스 오류
         throw new CustomError.DataBaseError(
+          'DataBaseError',
           '알려진 기타 데이터베이스 오류 (Known database error) => ' +
             error.message
         );
@@ -68,26 +73,31 @@ export function handlePrismaError(error) {
   } else if (error instanceof PrismaClientUnknownRequestError) {
     // 알 수 없는 요청 오류
     throw new CustomError.DataBaseError(
+      'DataBaseError',
       '알 수 없는 요청 오류 (Unknown request error) => ' + error.message
     );
   } else if (error instanceof PrismaClientRustPanicError) {
     // Prisma 엔진 패닉 오류
     throw new CustomError.DataBaseError(
+      'DataBaseError',
       'Prisma 엔진 패닉 오류 (Prisma engine panic) => ' + error.message
     );
   } else if (error instanceof PrismaClientInitializationError) {
     // Prisma 초기화 오류
     throw new CustomError.DataBaseError(
+      'DataBaseError',
       'Prisma 초기화 오류 (Prisma initialization error) => ' + error.message
     );
   } else if (error instanceof PrismaClientValidationError) {
     // Prisma 검증 오류
     throw new CustomError.DataBaseError(
+      'DataBaseError',
       'Prisma 검증 오류 (Prisma validation error) => ' + error.message
     );
   } else {
     // 예상치 못한 Prisma 오류
     throw new CustomError.DataBaseError(
+      'DataBaseError',
       '예상치 못한 Prisma 오류 (Unexpected Prisma error) => ' + error.message
     );
   }

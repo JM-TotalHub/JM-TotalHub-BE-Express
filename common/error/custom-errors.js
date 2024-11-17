@@ -1,31 +1,58 @@
 class CustomError extends Error {
-  constructor(message, statusCode) {
+  constructor(errorType, message, statusCode) {
     super(message);
+    this.errorType = errorType;
     this.statusCode = statusCode;
   }
 }
 
 class NotFoundError extends CustomError {
-  constructor(message = 'Resource not found', statusCode = 404) {
-    super(message, statusCode);
+  constructor(
+    errorType = 'NotFoundError',
+    message = 'Resource not found',
+    statusCode = 404
+  ) {
+    super(errorType, message, statusCode);
   }
 }
 
 class DataBaseError extends CustomError {
-  constructor(message = 'Database error', statusCode = 500) {
-    super(message, statusCode);
+  constructor(
+    errorType = 'DataBaseError',
+    message = 'Database error',
+    statusCode = 500
+  ) {
+    super(errorType, message, statusCode);
   }
 }
 
 class ValidationError extends CustomError {
-  constructor(message = 'Validation error', statusCode = 400) {
-    super(message, statusCode);
+  constructor(
+    errorType = 'ValidationError',
+    message = 'Validation error',
+    statusCode = 400
+  ) {
+    super(errorType, message, statusCode);
   }
 }
 
 class UnauthorizedError extends CustomError {
-  constructor(message = 'Unauthorized', statusCode = 401) {
-    super(message, statusCode);
+  constructor(
+    errorType = 'UnauthorizedError',
+    message = 'Unauthorized',
+    statusCode = 401
+  ) {
+    super(errorType, message, statusCode);
+  }
+}
+
+class AccountError extends CustomError {
+  constructor(
+    errorType = 'AccountError',
+    message = 'Account error',
+    statusCode = 400
+  ) {
+    super(errorType, message, statusCode);
   }
 }
 
@@ -35,4 +62,5 @@ export {
   DataBaseError,
   ValidationError,
   UnauthorizedError,
+  AccountError,
 };

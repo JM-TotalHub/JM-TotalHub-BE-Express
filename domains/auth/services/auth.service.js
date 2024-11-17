@@ -5,6 +5,10 @@ import * as AuthRepository from '../repositories/auth.repository';
 import getExpirationInSeconds from '../../../common/utils/expireTime';
 
 import RedisManager from '../../../common/connection/redisManager';
+import {
+  AccountError,
+  UnauthorizedError,
+} from '../../../common/error/custom-errors';
 
 const redisClient = RedisManager.getClient();
 
@@ -82,14 +86,20 @@ export async function generateNewAccessToken(oldAccessToken) {
       // oldPayload를 사용하여 새로운 토큰을 발급하는 로직을 추가합니다.
     } else if (error.name === 'JsonWebTokenError') {
       // 토큰이 유효하지 않은 경우
-      throw new Error('Invalid Access Token: ' + error.message);
+      throw new UnauthorizedError(
+        'Invalid Access Token',
+        'Invalid Access Token: ' + error.message
+      );
     } else {
       // 다른 에러 발생 시
-      throw new Error('Token verification failed: ' + error.message);
+      throw new UnauthorizedError(
+        'Token verification failed',
+        'Token verification failed: ' + error.message
+      );
     }
   }
 
-  console.log('oldPayload : ', oldPayload);
+  // console.log('oldPayload : ', oldPayload);
 
   if (oldPayload == null) return;
 
@@ -103,7 +113,10 @@ export async function generateNewAccessToken(oldAccessToken) {
     jwt.verify(refreshToken, ENV.JWT_SECRET_KEY01);
   } catch (error) {
     // 여기서 TokenExpiredError 으로 리플래쉬토큰 만료 처리 필요
-    throw new Error('Invalid refresh token: ' + error.name);
+    throw new UnauthorizedError(
+      'Invalid refresh token',
+      'Invalid refresh token: ' + error.name
+    );
   }
 
   const newAccessToken = jwt.sign(
@@ -115,22 +128,35 @@ export async function generateNewAccessToken(oldAccessToken) {
   return newAccessToken;
 }
 
-export async function getUserInfo(token) {
-  console.log('동작중');
-  let payload = null;
-  try {
-    payload = jwt.verify(token, ENV.JWT_SECRET_KEY01);
-  } catch (error) {
-    console.log(error.name);
-    return error;
-  }
-
-  console.log(`payload : ${payload}`);
-
-  const userInfo = await AuthRepository.findUserByUserId(payload.id);
-
-  console.log(`유저정보 서비스 로직 : ${userInfo}`);
-  console.log(userInfo);
+export async function getUserInfo(userId) {
+  const userInfo = await AuthRepository.findUserByUserId(userId);
 
   return userInfo;
+}
+
+export async function UpdateUserPassword(userId, currentPassword, newPassword) {
+  const hashedUserPassword =
+    await AuthRepository.findUserPasswordByUserId(userId);
+
+  const isMatch = await bcrypt.compare(currentPassword, hashedUserPassword);
+  if (!isMatch) {
+    throw new AccountError(
+      'INVALID_CURRENT_PASSWORD',
+      '비밀번호 변경 - 기존 비밀번호가 정확하지 않습니다.'
+    );
+  }
+
+  const isSamePassword = await bcrypt.compare(newPassword, hashedUserPassword);
+  if (isSamePassword) {
+    throw new AccountError(
+      'SAME_AS_CURRENT_PASSWORD',
+      '비밀번호 변경 - 새 비밀번호가 현재 비밀번호와 같습니다.'
+    );
+  }
+
+  const hashedNewPassword = await bcrypt.hash(newPassword, 10);
+
+  await AuthRepository.UpdateUserPassword(userId, hashedNewPassword);
+
+  return true;
 }
