@@ -24,6 +24,24 @@ async function findUserPostList(userId, queryData) {
   return await PostRepository.findUserPostListByUserId(userId, queryData);
 }
 
+async function createPostLike(userId, postId, type, action) {
+  if (type === 'like') {
+    if (action === 'add') {
+      return await PostRepository.insertPostLike(userId, postId);
+    } else if (action === 'delete') {
+      return await PostRepository.deletePostLike(userId, postId);
+    }
+  } else if (type === 'dislike') {
+    if (action === 'add') {
+      return await PostRepository.insertPostDislike(userId, postId);
+    } else if (action === 'delete') {
+      return await PostRepository.deletePostDislike(userId, postId);
+    }
+  }
+
+  return false;
+}
+
 export {
   findPostList,
   createPost,
@@ -31,4 +49,5 @@ export {
   updatePost,
   deletePost,
   findUserPostList,
+  createPostLike,
 };

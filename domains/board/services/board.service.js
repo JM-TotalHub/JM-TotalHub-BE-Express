@@ -20,8 +20,8 @@ async function findBoard(boardId) {
   return await BoardRepository.findBoardById(boardId);
 }
 
-async function createBoard(bodyData) {
-  return await BoardRepository.insertBoard(bodyData);
+async function createBoard(userId, bodyData) {
+  return await BoardRepository.insertBoard(userId, bodyData);
 }
 
 async function updateBoard(boardId, bodyData) {

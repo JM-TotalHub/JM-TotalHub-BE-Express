@@ -25,6 +25,12 @@ postRouter.get(
   errorWrapper(PostController.postUserList)
 );
 
+postRouter.post(
+  `/:postId/likes`,
+  jwtAuthMiddleware,
+  errorWrapper(PostController.postLike)
+);
+
 postWithBoardIdRouter.post(
   '/',
   jwtAuthMiddleware,

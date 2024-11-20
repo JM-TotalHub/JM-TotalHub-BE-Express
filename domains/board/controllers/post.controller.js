@@ -45,4 +45,27 @@ async function postUserList(req, res) {
   res.status(200).json(postList);
 }
 
-export { postList, postAdd, postDetails, postModify, postRemove, postUserList };
+async function postLike(req, res) {
+  const userId = req.user.id;
+
+  const { postId } = req.params;
+  const { type, action } = req.body;
+
+  const postList = await PostService.createPostLike(
+    userId,
+    postId,
+    type,
+    action
+  );
+  res.status(200).json(postList);
+}
+
+export {
+  postList,
+  postAdd,
+  postDetails,
+  postModify,
+  postRemove,
+  postUserList,
+  postLike,
+};
