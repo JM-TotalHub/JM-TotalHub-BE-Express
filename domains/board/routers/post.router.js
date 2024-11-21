@@ -25,6 +25,12 @@ postRouter.get(
   errorWrapper(PostController.postUserList)
 );
 
+postRouter.post(
+  `/:postId/likes`,
+  jwtAuthMiddleware,
+  errorWrapper(PostController.postLike)
+);
+
 postWithBoardIdRouter.post(
   '/',
   jwtAuthMiddleware,
@@ -33,10 +39,15 @@ postWithBoardIdRouter.post(
   errorWrapper(PostController.postAdd)
 );
 
-postRouter.get('/:postId', errorWrapper(PostController.postDetails));
+postRouter.get(
+  '/:postId',
+  jwtAuthMiddleware,
+  errorWrapper(PostController.postDetails)
+);
 
 postRouter.put(
   '/:postId',
+  jwtAuthMiddleware,
   escapeHtmlMiddleware,
   validationMiddleware(PostDto.PostUpdateDto),
   errorWrapper(PostController.postModify)

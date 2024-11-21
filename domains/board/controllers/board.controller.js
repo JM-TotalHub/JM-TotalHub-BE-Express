@@ -12,8 +12,9 @@ async function boardDetails(req, res) {
 }
 
 async function boardAdd(req, res) {
+  const userId = req.user.id;
   const boardData = req.body;
-  const createdBoard = await BoardService.createBoard(boardData);
+  const createdBoard = await BoardService.createBoard(userId, boardData);
   res.status(201).json(createdBoard);
 }
 

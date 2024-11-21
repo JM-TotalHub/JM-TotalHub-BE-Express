@@ -10,6 +10,7 @@
  * ======================================================================
  */
 
+import { DataBaseError } from '../../../common/error/custom-errors';
 import prisma from '../../../prisma';
 
 async function findPostListByBoardId(boardId, queryData) {
@@ -72,8 +73,17 @@ async function insertPost(userId, boardId, bodyData) {
   });
 }
 
-async function findPostById(postId) {
-  return await prisma.post.findUniqueOrThrow({
+async function findPostById(postId, userId) {
+  console.log('게시글 조회!!!   postId : ', postId, ' userId : ', userId);
+
+  // 조회수 증가
+  await prisma.post.update({
+    where: { id: Number(postId) },
+    data: { view_count: { increment: 1 } }, // viewCount가 조회수를 저장하는 필드라고 가정
+  });
+
+  // 게시글 찾기
+  const post = await prisma.post.findUniqueOrThrow({
     where: {
       id: Number(postId),
     },
@@ -85,8 +95,36 @@ async function findPostById(postId) {
           nickname: true,
         },
       },
+      _count: {
+        select: {
+          likes: true,
+          dislikes: true,
+        },
+      },
+      likes: userId
+        ? {
+            where: { user_id: userId },
+            select: { id: true },
+          }
+        : false,
+      dislikes: userId
+        ? {
+            where: { user_id: userId },
+            select: { id: true },
+          }
+        : false,
     },
   });
+
+  console.log(post);
+
+  return {
+    ...post,
+    likesCount: post._count.likes,
+    dislikesCount: post._count.dislikes,
+    userLiked: userId ? post.likes.length > 0 : false,
+    userDisliked: userId ? post.dislikes.length > 0 : false,
+  };
 }
 
 async function updatePost(postId, bodyData) {
@@ -162,6 +200,117 @@ async function findUserPostListByUserId(userId, queryData) {
   };
 }
 
+async function insertPostLike(userId, postId) {
+  const existingLike = await prisma.post_like.findUnique({
+    where: {
+      user_id_post_id: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    },
+  });
+
+  if (!existingLike) {
+    await prisma.post_like.create({
+      data: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    });
+  } else {
+    throw new DataBaseError(
+      '게시글 좋아요 추가 Error',
+      '이미 좋아요한 게시글 입니다.'
+    );
+  }
+
+  return true;
+}
+
+async function deletePostLike(userId, postId) {
+  const existingLike = await prisma.post_like.findUnique({
+    where: {
+      user_id_post_id: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    },
+  });
+
+  if (existingLike) {
+    await prisma.post_like.delete({
+      where: {
+        user_id_post_id: {
+          user_id: Number(userId),
+          post_id: Number(postId),
+        },
+      },
+    });
+  } else {
+    throw new DataBaseError(
+      '게시글 좋아요 제거 Error',
+      '좋아요 하지 않은 게시글 입니다.'
+    );
+  }
+
+  return true;
+}
+
+async function insertPostDislike(userId, postId) {
+  const existingLike = await prisma.post_dislike.findUnique({
+    where: {
+      user_id_post_id: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    },
+  });
+
+  if (!existingLike) {
+    await prisma.post_dislike.create({
+      data: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    });
+  } else {
+    throw new DataBaseError(
+      '게시글 싫어요 Error',
+      '이미 싫어요한 게시글 입니다.'
+    );
+  }
+  return true;
+}
+
+async function deletePostDislike(userId, postId) {
+  const existingLike = await prisma.post_dislike.findUnique({
+    where: {
+      user_id_post_id: {
+        user_id: Number(userId),
+        post_id: Number(postId),
+      },
+    },
+  });
+
+  if (existingLike) {
+    await prisma.post_dislike.delete({
+      where: {
+        user_id_post_id: {
+          user_id: Number(userId),
+          post_id: Number(postId),
+        },
+      },
+    });
+  } else {
+    throw new DataBaseError(
+      '게시글 싫어요 제거 Error',
+      '싫어요 하지 않은 게시글 입니다.'
+    );
+  }
+
+  return true;
+}
+
 export {
   findPostListByBoardId,
   insertPost,
@@ -169,4 +318,8 @@ export {
   updatePost,
   deletePost,
   findUserPostListByUserId,
+  insertPostLike,
+  deletePostLike,
+  insertPostDislike,
+  deletePostDislike,
 };

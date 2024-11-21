@@ -22,6 +22,7 @@ boardRouter.post(
   '/',
   escapeHtmlMiddleware,
   validationMiddleware(BoardDto.BoardCreateDto),
+  jwtAuthMiddleware,
   errorWrapper(BoardController.boardAdd)
 );
 

@@ -13,12 +13,15 @@ async function findBoardById(boardId) {
   });
 }
 
-async function insertBoard(bodyData) {
+async function insertBoard(userId, bodyData) {
   const { name, description } = bodyData;
   return await prisma.board.create({
     data: {
       name,
       description,
+      user: {
+        connect: { id: userId },
+      },
     },
   });
 }
