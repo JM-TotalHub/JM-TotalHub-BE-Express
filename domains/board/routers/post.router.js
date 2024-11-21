@@ -7,6 +7,7 @@ import errorWrapper from '../../../common/error/error-wrapper';
 import * as PostController from '../controllers/post.controller';
 import * as PostDto from '../dto/post.dto';
 import jwtAuthMiddleware from '../../../common/auth/jwtAuthMiddleware';
+import optionalAuthMiddleware from '../../../common/auth/optionalJwtAuthMiddleware';
 
 // => boards/posts
 const postRouter = express.Router();
@@ -41,7 +42,7 @@ postWithBoardIdRouter.post(
 
 postRouter.get(
   '/:postId',
-  jwtAuthMiddleware,
+  optionalAuthMiddleware,
   errorWrapper(PostController.postDetails)
 );
 
