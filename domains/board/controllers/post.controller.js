@@ -18,7 +18,11 @@ async function postAdd(req, res) {
 
 async function postDetails(req, res) {
   const { postId } = req.params;
-  const post = await PostService.findPost(postId);
+  const userId = req.user ? req.user.id : null;
+
+  console.log('게시글 조회01!!!   postId : ', postId, ' userId : ', userId);
+
+  const post = await PostService.findPost(postId, userId);
   res.status(200).json(post);
 }
 

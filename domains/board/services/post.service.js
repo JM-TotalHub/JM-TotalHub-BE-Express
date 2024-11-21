@@ -8,8 +8,8 @@ async function createPost(userId, boardId, postData) {
   return await PostRepository.insertPost(userId, boardId, postData);
 }
 
-async function findPost(postId) {
-  return await PostRepository.findPostById(postId);
+async function findPost(postId, userId) {
+  return await PostRepository.findPostById(postId, userId);
 }
 
 async function updatePost(postId, bodyData) {

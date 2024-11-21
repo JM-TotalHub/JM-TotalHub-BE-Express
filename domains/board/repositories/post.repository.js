@@ -73,7 +73,9 @@ async function insertPost(userId, boardId, bodyData) {
   });
 }
 
-async function findPostById(postId) {
+async function findPostById(postId, userId) {
+  console.log('게시글 조회!!!   postId : ', postId, ' userId : ', userId);
+
   // 조회수 증가
   await prisma.post.update({
     where: { id: Number(postId) },
@@ -93,20 +95,35 @@ async function findPostById(postId) {
           nickname: true,
         },
       },
-      // likes와 dislikes 개수만 포함
       _count: {
         select: {
           likes: true,
           dislikes: true,
         },
       },
+      likes: userId
+        ? {
+            where: { user_id: userId },
+            select: { id: true },
+          }
+        : false,
+      dislikes: userId
+        ? {
+            where: { user_id: userId },
+            select: { id: true },
+          }
+        : false,
     },
   });
+
+  console.log(post);
 
   return {
     ...post,
     likesCount: post._count.likes,
     dislikesCount: post._count.dislikes,
+    userLiked: userId ? post.likes.length > 0 : false,
+    userDisliked: userId ? post.dislikes.length > 0 : false,
   };
 }
 
@@ -187,8 +204,8 @@ async function insertPostLike(userId, postId) {
   const existingLike = await prisma.post_like.findUnique({
     where: {
       user_id_post_id: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     },
   });
@@ -196,8 +213,8 @@ async function insertPostLike(userId, postId) {
   if (!existingLike) {
     await prisma.post_like.create({
       data: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     });
   } else {
@@ -214,8 +231,8 @@ async function deletePostLike(userId, postId) {
   const existingLike = await prisma.post_like.findUnique({
     where: {
       user_id_post_id: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     },
   });
@@ -224,8 +241,8 @@ async function deletePostLike(userId, postId) {
     await prisma.post_like.delete({
       where: {
         user_id_post_id: {
-          user_id: userId,
-          post_id: postId,
+          user_id: Number(userId),
+          post_id: Number(postId),
         },
       },
     });
@@ -243,8 +260,8 @@ async function insertPostDislike(userId, postId) {
   const existingLike = await prisma.post_dislike.findUnique({
     where: {
       user_id_post_id: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     },
   });
@@ -252,8 +269,8 @@ async function insertPostDislike(userId, postId) {
   if (!existingLike) {
     await prisma.post_dislike.create({
       data: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     });
   } else {
@@ -269,8 +286,8 @@ async function deletePostDislike(userId, postId) {
   const existingLike = await prisma.post_dislike.findUnique({
     where: {
       user_id_post_id: {
-        user_id: userId,
-        post_id: postId,
+        user_id: Number(userId),
+        post_id: Number(postId),
       },
     },
   });
@@ -279,8 +296,8 @@ async function deletePostDislike(userId, postId) {
     await prisma.post_dislike.delete({
       where: {
         user_id_post_id: {
-          user_id: userId,
-          post_id: postId,
+          user_id: Number(userId),
+          post_id: Number(postId),
         },
       },
     });
